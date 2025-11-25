@@ -9,7 +9,7 @@ resource "oci_identity_dynamic_group" "upwind_management_dg" {
   description    = "Dynamic group with access to the organisation"
   # Allow instances in any compartment (including root) to be part of this dynamic group
   # This enables comprehensive resource discovery including IAM resources, policies, and root-level resources
-  matching_rule  = "ALL {instance.compartment.id != ''}"
+  matching_rule = "ALL {instance.compartment.id != ''}"
 
   lifecycle {
     precondition {
@@ -33,7 +33,7 @@ resource "oci_identity_dynamic_group" "cloudscanner_dg" {
   name           = format("upwind-cs-%s", local.resource_suffix_hyphen)
   description    = "Dynamic group used by CloudScanners for scanning across compartments and scaling operations"
   # TODO: all compartments for resource discovery, but scanning operations in orchestrator compartment
-  matching_rule  = "ALL {instance.compartment.id != ''}"
+  matching_rule = "ALL {instance.compartment.id != ''}"
 
   lifecycle {
     precondition {

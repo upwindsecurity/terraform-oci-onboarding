@@ -124,21 +124,21 @@ resource "oci_identity_policy" "aws_workload_federation_policy" {
 }
 
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
-  idcs_endpoint        = data.oci_identity_domain.upwind_identity_domain.url
-  issuer               = var.is_dev ? "https://upwind.dev" : "https://upwind.io"
-  name                 = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
-  schemas              = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]
-  type                 = "JWT"
-  active               = true
-  allow_impersonation  = true
-  oauth_clients        = [oci_identity_domains_app.upwind_identity_domain_oidc_client.id]
-  public_key_endpoint  = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
-  subject_type         = "User"
-  description          = "Created by Terraform"
+  idcs_endpoint       = data.oci_identity_domain.upwind_identity_domain.url
+  issuer              = var.is_dev ? "https://upwind.dev" : "https://upwind.io"
+  name                = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
+  schemas             = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]
+  type                = "JWT"
+  active              = true
+  allow_impersonation = true
+  oauth_clients       = [oci_identity_domains_app.upwind_identity_domain_oidc_client.id]
+  public_key_endpoint = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
+  subject_type        = "User"
+  description         = "Created by Terraform"
 
   dynamic "impersonation_service_users" {
     for_each = {
-      for u in [ oci_identity_domains_user.upwind_management_user, var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null ] :
+      for u in [oci_identity_domains_user.upwind_management_user, var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null] :
       u.user_name => u
     }
     content {

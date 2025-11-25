@@ -128,16 +128,16 @@ output "default_tags" {
 output "identity_domain_federation_info" {
   description = "Information needed to configure AWS IAM OIDC provider for OCI federation"
   value = {
-    identity_domain_id    = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
-    identity_domain_name  = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
-    oidc_issuer_url       = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : (
+    identity_domain_id   = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
+    identity_domain_name = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
+    oidc_issuer_url = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : (
       var.create_identity_domain ?
-        try("https://${oci_identity_domain.upwind_identity_domain[0].id}.identity.oraclecloud.com/oauth2/v1", var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "") :
-        (var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "")
+      try("https://${oci_identity_domain.upwind_identity_domain[0].id}.identity.oraclecloud.com/oauth2/v1", var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "") :
+      (var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "")
     )
-    management_user_name  = oci_identity_user.upwind_management_user.name
-    federated_group_name  = var.aws_federated_group_name
-    aws_account_id        = var.is_dev ? "437279811180" : "627244208106"
+    management_user_name = oci_identity_user.upwind_management_user.name
+    federated_group_name = var.aws_federated_group_name
+    aws_account_id       = var.is_dev ? "437279811180" : "627244208106"
   }
   sensitive = false
 }

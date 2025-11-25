@@ -107,12 +107,12 @@ output "target_compartment_ids" {
 output "configuration" {
   description = "Module configuration details."
   value = {
-    upwind_organization_id           = var.upwind_organization_id
+    upwind_organization_id             = var.upwind_organization_id
     upwind_orchestrator_compartment_id = var.upwind_orchestrator_compartment_id
-    oci_region                       = var.oci_region
-    enable_cloudscanners             = var.enable_cloudscanners
-    enable_dspm_scanning             = var.enable_dspm_scanning
-    resource_suffix                  = var.resource_suffix
-    tags                             = var.tags
+    oci_region                         = var.oci_region
+    enable_cloudscanners               = var.enable_cloudscanners
+    enable_dspm_scanning               = var.enable_dspm_scanning
+    resource_suffix                    = var.resource_suffix
+    tags                               = var.tags
   }
 }

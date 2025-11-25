@@ -13,8 +13,7 @@ locals {
   org_id_truncated = substr(local.org_id_sanitized, length(local.org_id_sanitized) - 5, 5)
 
   # Create resource suffixes that include both org_id and user-provided suffix
-  resource_suffix_hyphen     = format("%s%s", local.org_id_truncated, var.resource_suffix == "" ? "" : "-${var.resource_suffix}")
-  resource_suffix_underscore = format("%s%s", local.org_id_truncated, var.resource_suffix == "" ? "" : "_${var.resource_suffix}")
+  resource_suffix_hyphen = format("%s%s", local.org_id_truncated, var.resource_suffix == "" ? "" : "-${var.resource_suffix}")
 }
 
 data "oci_identity_tenancy" "tenancy" {
