@@ -1,15 +1,3 @@
-# Deployment Mode
-variable "deployment_mode" {
-  description = "Deployment mode: 'tenant' for tenancy-wide deployment or 'compartment' for compartment-level deployment"
-  type        = string
-  default     = "tenant"
-
-  validation {
-    condition     = contains(["tenant", "compartment"], var.deployment_mode)
-    error_message = "deployment_mode must be either 'tenant' or 'compartment'."
-  }
-}
-
 # region upwind
 variable "resource_suffix" {
   description = "The suffix to append to all resources created by this module."
@@ -92,33 +80,18 @@ variable "oci_tenancy_id" {
   }
 }
 
-# Orchestrator compartment - different variable names for tenant vs compartment modules
 variable "upwind_orchestrator_compartment" {
-  description = "The orchestrator compartment where Upwind resources are created. Can be either a compartment OCID or compartment name. Required when deployment_mode is 'tenant'."
+  description = "The orchestrator compartment where Upwind resources are created. Can be either a compartment OCID or compartment name."
   type        = string
-  default     = ""
-}
-
-variable "upwind_orchestrator_compartment_id" {
-  description = "The orchestrator compartment OCID where Upwind resources are created. Used for compartment deployment mode."
-  type        = string
-  default     = ""
 
   validation {
-    condition     = var.upwind_orchestrator_compartment_id == "" || can(regex("^ocid1\\.compartment\\..*", var.upwind_orchestrator_compartment_id))
-    error_message = "The Upwind orchestrator compartment ID must be a valid OCI compartment OCID."
+    condition     = var.upwind_orchestrator_compartment != ""
+    error_message = "The Upwind orchestrator compartment ID cannot be empty."
   }
 }
 
-# Compartment mode specific
-variable "target_compartment_ids" {
-  description = "List of compartment IDs to grant access to. Required when deployment_mode is 'compartment'."
-  type        = list(string)
-  default     = []
-}
-
 variable "root_level_compartment_id" {
-  description = "The root-level compartment ID for workload identity federation resources. For tenant mode: defaults to tenancy_id. For compartment mode: defaults to orchestrator compartment_id."
+  description = "The root-level compartment ID for workload identity federation resources. For tenant module, defaults to tenancy_id. Used for both identity domain and WIF policy creation."
   type        = string
   default     = ""
 
@@ -159,13 +132,13 @@ variable "identity_domain_description" {
 }
 
 variable "identity_domain_license_type" {
-  description = "License type for the identity domain. Valid values: 'free', 'premium' for tenant mode, 'DEFAULT', 'PREMIUM', 'STARTER' for compartment mode"
+  description = "License type for the identity domain. Valid values: 'FREE', 'PREMIUM'"
   type        = string
   default     = "free"
 
   validation {
-    condition     = contains(["free", "premium", "DEFAULT", "PREMIUM", "STARTER"], var.identity_domain_license_type)
-    error_message = "The identity_domain_license_type must be one of: free, premium, DEFAULT, PREMIUM, STARTER."
+    condition     = contains(["free", "premium"], var.identity_domain_license_type)
+    error_message = "The identity_domain_license_type must be one of: free, premium."
   }
 }
 
@@ -186,6 +159,7 @@ variable "aws_federated_group_name" {
   type        = string
   default     = "aws-federated-workloads"
 }
+
 # endregion workload identity federation
 
 variable "enable_cloudscanners" {
