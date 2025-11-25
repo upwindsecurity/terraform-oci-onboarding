@@ -146,3 +146,7 @@ output "identity_domain" {
   description = "The created identity domain resource (if create_identity_domain is true)"
   value       = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0], null) : null
 }
+
+output "upwind_identity_domain_oidc_client_id" {
+  value = oci_identity_domains_app.upwind_identity_domain_oidc_client.id
+}

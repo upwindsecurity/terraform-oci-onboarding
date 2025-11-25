@@ -70,6 +70,16 @@ output "upwind_cloudscanner_dg_compute_viewer_policies" {
 
 ### Workload Identity Federation
 
+output "identity_domain_id" {
+  description = "The ID of the OCI Identity Domain."
+  value       = module.iam.identity_domain.id
+}
+
+output "identity_domain_name" {
+  description = "The name of the OCI Identity Domain."
+  value       = module.iam.identity_domain.name
+}
+
 output "identity_domain_federation_info" {
   description = "Information needed to configure AWS IAM OIDC provider for OCI federation"
   value       = module.iam.identity_domain_federation_info

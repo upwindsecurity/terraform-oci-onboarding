@@ -6,15 +6,22 @@ locals {
   # If creating a domain, use its display_name; otherwise use the provided name
   identity_domain_name_prefix = var.create_identity_domain ? (
     try(oci_identity_domain.upwind_identity_domain[0].display_name, "") != "" ?
-      "'${oci_identity_domain.upwind_identity_domain[0].display_name}'/" :
-      ""
-  ) : (
+    "'${oci_identity_domain.upwind_identity_domain[0].display_name}'/" :
+    ""
+    ) : (
     var.identity_domain_name != "" ? "'${var.identity_domain_name}'/" : ""
   )
 }
 
+
+
+
 ### Workload Identity Federation for AWS to OCI Authentication
 ### See: https://docs.oracle.com/en-us/iaas/Content/Identity/domains/overview.htm
+
+data "oci_identity_domain" "upwind_identity_domain" {
+  domain_id = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
+}
 
 # Create Identity Domain for workload identity federation
 resource "oci_identity_domain" "upwind_identity_domain" {
@@ -31,6 +38,21 @@ resource "oci_identity_domain" "upwind_identity_domain" {
       error_message = "Either identity_domain_display_name must be provided or resource_suffix must be set when creating an identity domain."
     }
   }
+}
+
+resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
+  idcs_endpoint   = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].idcs_endpoint, data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint) : data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint
+  display_name    = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
+  active          = true
+  schemas         = ["urn:ietf:params:scim:schemas:oracle:idcs:App"]
+  is_oauth_client = true
+  client_type     = "confidential"
+  allowed_grants  = ["client_credentials"]
+  based_on_template {
+    value = "CustomWebAppTemplateId"
+  }
+
+  depends_on = [oci_identity_domain.upwind_identity_domain]
 }
 
 # Policy to allow federated users from AWS to assume the management user role
@@ -60,3 +82,35 @@ resource "oci_identity_policy" "aws_workload_federation_policy" {
     ]
   )
 }
+
+resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
+  idcs_endpoint        = data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint
+  issuer               = data.oci_identity_domain.upwind_identity_domain[0].oidc_issuer_url
+  name                 = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
+  schemas              = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]
+  type                 = "JWT"
+  active               = true
+  allow_impersonation  = true
+  oauth_clients        = [oci_identity_domains_app.conf_app.name]
+  public_key_endpoint  = data.oci_identity_domain.upwind_identity_domain[0].public_key_endpoint
+  subject_type         = "User"
+  description          = "Created by Terraform"
+
+  dynamic "impersonation_service_users" {
+    for_each = [ oci_identity_user.upwind_management_user ]
+    content {
+      rule  = "${impersonation_service_users.value.claim_name} ${impersonation_service_users.value.operator} ${impersonation_service_users.value.claim_value}"
+      value = oci_identity_user.upwind_management_user.id
+    }
+  }
+
+  depends_on = [
+    oci_identity_user.upwind_management_user
+  ]
+}
+
+
+output "trust_id" {
+  value = oci_identity_domains_identity_propagation_trust.token_exchange_trust.id
+}
+
