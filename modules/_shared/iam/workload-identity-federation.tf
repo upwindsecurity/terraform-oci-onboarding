@@ -41,7 +41,7 @@ resource "oci_identity_domain" "upwind_identity_domain" {
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
-  idcs_endpoint   = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].idcs_endpoint, data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint) : data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint
+  idcs_endpoint   = data.oci_identity_domain.upwind_identity_domain.url
   display_name    = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
   active          = true
   schemas         = ["urn:ietf:params:scim:schemas:oracle:idcs:App"]
@@ -84,22 +84,22 @@ resource "oci_identity_policy" "aws_workload_federation_policy" {
 }
 
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
-  idcs_endpoint        = data.oci_identity_domain.upwind_identity_domain[0].idcs_endpoint
-  issuer               = data.oci_identity_domain.upwind_identity_domain[0].oidc_issuer_url
+  idcs_endpoint        = data.oci_identity_domain.upwind_identity_domain.url
+  issuer               = var.is_dev ? "https://upwind.dev" : "https://upwind.io"
   name                 = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
   schemas              = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]
   type                 = "JWT"
   active               = true
   allow_impersonation  = true
-  oauth_clients        = [oci_identity_domains_app.conf_app.name]
-  public_key_endpoint  = data.oci_identity_domain.upwind_identity_domain[0].public_key_endpoint
+  oauth_clients        = [oci_identity_domains_app.upwind_identity_domain_oidc_client.name]
+  public_key_endpoint  = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
   subject_type         = "User"
   description          = "Created by Terraform"
 
   dynamic "impersonation_service_users" {
     for_each = [ oci_identity_user.upwind_management_user ]
     content {
-      rule  = "${impersonation_service_users.value.claim_name} ${impersonation_service_users.value.operator} ${impersonation_service_users.value.claim_value}"
+      rule  = "email eq \"${oci_identity_user.upwind_management_user.email}\""
       value = oci_identity_user.upwind_management_user.id
     }
   }
@@ -111,6 +111,6 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
 
 
 output "trust_id" {
-  value = oci_identity_domains_identity_propagation_trust.token_exchange_trust.id
+  value = oci_identity_domains_identity_propagation_trust.upwind_identity_domain_token_exchange_trust.id
 }
 
