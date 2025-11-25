@@ -23,8 +23,3 @@ locals {
     if can(regex("^[a-zA-Z0-9_.-]{1,100}$", k)) && can(regex("^[a-zA-Z0-9_.-]{0,100}$", v))
   }
 }
-
-data "oci_identity_compartment" "current" {
-  id = local.compartment_id
-}
-

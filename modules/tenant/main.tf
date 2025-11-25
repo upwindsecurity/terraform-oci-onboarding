@@ -20,7 +20,3 @@ locals {
 data "oci_identity_tenancy" "tenancy" {
   tenancy_id = var.oci_tenancy_id
 }
-
-data "oci_identity_compartment" "current" {
-  id = local.compartment_id
-}
