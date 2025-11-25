@@ -15,7 +15,6 @@ locals {
 
 
 
-
 ### Workload Identity Federation for AWS to OCI Authentication
 ### See: https://docs.oracle.com/en-us/iaas/Content/Identity/domains/overview.htm
 
@@ -24,6 +23,7 @@ data "oci_identity_domain" "upwind_identity_domain" {
 }
 
 # Create Identity Domain for workload identity federation
+# NOTE: OCI Identity Domains cannot be deleted once in CREATED status.
 resource "oci_identity_domain" "upwind_identity_domain" {
   count          = var.create_identity_domain ? 1 : 0
   compartment_id = var.root_level_compartment_id
@@ -37,6 +37,11 @@ resource "oci_identity_domain" "upwind_identity_domain" {
       condition     = var.identity_domain_display_name != "" || local.resource_suffix_hyphen != ""
       error_message = "Either identity_domain_display_name must be provided or resource_suffix must be set when creating an identity domain."
     }
+    # Prevent Terraform from trying to replace the domain if it already exists
+    # OCI Identity Domains cannot be deleted once in CREATED status
+    prevent_destroy = true
+    # Ignore changes to description as it's not critical and may be updated externally
+    ignore_changes = [description]
   }
 }
 
@@ -53,6 +58,41 @@ resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
   }
 
   depends_on = [oci_identity_domain.upwind_identity_domain]
+}
+
+# Create Identity Domain user for management operations
+# This user corresponds to the OCI IAM user and is used for token exchange
+resource "oci_identity_domains_user" "upwind_management_user" {
+  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:User"]
+  user_name     = oci_identity_user.upwind_management_user.email
+  description   = "deployment"
+
+  urnietfparamsscimschemasoracleidcsextensionuser_user {
+    service_user = true
+  }
+
+  depends_on = [
+    oci_identity_user.upwind_management_user,
+    oci_identity_domain.upwind_identity_domain
+  ]
+}
+
+resource "oci_identity_domains_user" "cloudscanner_user" {
+  count         = var.enable_cloudscanners ? 1 : 0
+  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:User"]
+  user_name     = oci_identity_user.cloudscanner_user[0].email
+  description   = "cloudscanner"
+
+  urnietfparamsscimschemasoracleidcsextensionuser_user {
+    service_user = true
+  }
+
+  depends_on = [
+    oci_identity_user.cloudscanner_user,
+    oci_identity_domain.upwind_identity_domain
+  ]
 }
 
 # Policy to allow federated users from AWS to assume the management user role
@@ -91,21 +131,26 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
   type                 = "JWT"
   active               = true
   allow_impersonation  = true
-  oauth_clients        = [oci_identity_domains_app.upwind_identity_domain_oidc_client.name]
+  oauth_clients        = [oci_identity_domains_app.upwind_identity_domain_oidc_client.id]
   public_key_endpoint  = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
   subject_type         = "User"
   description          = "Created by Terraform"
 
   dynamic "impersonation_service_users" {
-    for_each = [ oci_identity_user.upwind_management_user ]
+    for_each = {
+      for u in [ oci_identity_domains_user.upwind_management_user, var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null ] :
+      u.user_name => u
+    }
     content {
-      rule  = "email eq \"${oci_identity_user.upwind_management_user.email}\""
-      value = oci_identity_user.upwind_management_user.id
+      rule  = "role eq ${impersonation_service_users.value.description}"
+      value = impersonation_service_users.value.id
     }
   }
 
   depends_on = [
-    oci_identity_user.upwind_management_user
+    oci_identity_user.upwind_management_user,
+    oci_identity_domains_user.upwind_management_user,
+    oci_identity_domains_app.upwind_identity_domain_oidc_client
   ]
 }
 
