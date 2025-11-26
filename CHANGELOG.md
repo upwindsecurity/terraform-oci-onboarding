@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.0.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.0.0...v1.0.1) (2025-11-26)
+
+### Bug Fixes
+
+* **PE-6545:** loosen validation on tenant ocid ([#3](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/3)) ([b6181d7](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/b6181d7e1d5954e05b5f292eaf30a53d0380e499))
+
 ## 1.0.0 (2025-11-25)
 
 ### Bug Fixes
