@@ -22,9 +22,9 @@ conditional deployments, and comprehensive configuration.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_main_complete"></a> [main\_complete](#module\_main\_complete) | ../../modules/main | n/a |
-| <a name="module_main_dev"></a> [main\_dev](#module\_main\_dev) | ../../modules/main | n/a |
-| <a name="module_main_optional"></a> [main\_optional](#module\_main\_optional) | ../../modules/main | n/a |
+| <a name="module_main_complete"></a> [main\_complete](#module\_main\_complete) | ../.. | n/a |
+| <a name="module_main_dev"></a> [main\_dev](#module\_main\_dev) | ../.. | n/a |
+| <a name="module_main_optional"></a> [main\_optional](#module\_main\_optional) | ../.. | n/a |
 
 ## Resources
 

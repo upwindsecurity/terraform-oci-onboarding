@@ -21,7 +21,7 @@ This example demonstrates the basic usage of the main module with minimal config
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_main_basic"></a> [main\_basic](#module\_main\_basic) | ../../modules/main | n/a |
+| <a name="module_main_basic"></a> [main\_basic](#module\_main\_basic) | ../.. | n/a |
 
 ## Resources
 

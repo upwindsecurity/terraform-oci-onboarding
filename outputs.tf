@@ -43,3 +43,4 @@ output "configuration" {
   description = "Module configuration details"
   value       = var.deployment_mode == "tenant" ? module.tenant[0].configuration : module.compartment[0].configuration
 }
+

@@ -1,7 +1,7 @@
 # Tenant deployment mode
 module "tenant" {
   count  = var.deployment_mode == "tenant" ? 1 : 0
-  source = "../tenant"
+  source = "./modules/tenant"
 
   # Upwind Configuration
   upwind_organization_id = var.upwind_organization_id
@@ -35,7 +35,7 @@ module "tenant" {
 # Compartment deployment mode
 module "compartment" {
   count  = var.deployment_mode == "compartment" ? 1 : 0
-  source = "../compartment"
+  source = "./modules/compartment"
 
   # Upwind Configuration
   upwind_organization_id = var.upwind_organization_id
@@ -66,3 +66,4 @@ module "compartment" {
   identity_domain_oidc_issuer_url = var.identity_domain_oidc_issuer_url
   aws_federated_group_name        = var.aws_federated_group_name
 }
+

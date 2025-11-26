@@ -1,5 +1,5 @@
 module "main_basic" {
-  source = "../../modules/main"
+  source = "../.."
 
   enabled     = true
   name        = "basic-example"

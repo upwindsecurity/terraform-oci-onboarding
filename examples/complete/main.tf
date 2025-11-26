@@ -1,5 +1,5 @@
 module "main_complete" {
-  source = "../../modules/main"
+  source = "../.."
 
   enabled     = true
   name        = "complete-example"
@@ -17,7 +17,7 @@ module "main_complete" {
 
 # Example of conditional module usage
 module "main_optional" {
-  source = "../../modules/main"
+  source = "../.."
 
   enabled     = var.create_optional_resources
   name        = "optional-example"
@@ -33,7 +33,7 @@ module "main_optional" {
 
 # Example showing different environments
 module "main_dev" {
-  source = "../../modules/main"
+  source = "../.."
 
   enabled     = true
   name        = "dev-example"

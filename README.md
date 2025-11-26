@@ -11,7 +11,7 @@ documentation generation, and release management.
 
 This repository contains the following Terraform modules:
 
-- [modules/main/](./modules/main/) - Main module with core functionality
+- Root level - Main module with core functionality (switches between tenant and compartment deployment modes)
 - Additional modules can be added to extend functionality
 
 ## Examples
