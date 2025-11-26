@@ -83,12 +83,12 @@ variable "oci_region" {
 }
 
 variable "oci_tenancy_id" {
-  description = "The OCI tenancy ID."
+  description = "The OCI tenancy ID or compartment ID."
   type        = string
 
   validation {
-    condition     = can(regex("^ocid1\\.tenancy\\..*", var.oci_tenancy_id))
-    error_message = "The OCI tenancy ID must be a valid OCI tenancy OCID."
+    condition     = can(regex("^ocid1\\.(tenancy|compartment)\\..*", var.oci_tenancy_id))
+    error_message = "The OCI tenancy ID must be a valid OCI tenancy or compartment OCID."
   }
 }
 
@@ -207,3 +207,4 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
