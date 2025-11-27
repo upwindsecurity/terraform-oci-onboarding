@@ -131,9 +131,12 @@ output "identity_domain_federation_info" {
     identity_domain_id   = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
     identity_domain_name = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
     oidc_issuer_url = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : (
-      var.create_identity_domain ?
-      try("https://${oci_identity_domain.upwind_identity_domain[0].id}.identity.oraclecloud.com/oauth2/v1", var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "") :
-      (var.identity_domain_id != "" ? "https://${var.identity_domain_id}.identity.oraclecloud.com/oauth2/v1" : "")
+      # Extract base URL from IDCS endpoint and add :443 port
+      # We need: https://idcs-xxx.identity.oraclecloud.com:443
+      try(
+        "${regex("^https://[^/]+", data.oci_identity_domain.upwind_identity_domain.url)}:443",
+        ""
+      )
     )
     management_user_name = oci_identity_user.upwind_management_user.name
     federated_group_name = var.aws_federated_group_name
@@ -148,5 +151,17 @@ output "identity_domain" {
 }
 
 output "upwind_identity_domain_app_id" {
-  value = oci_identity_domains_app.upwind_identity_domain_oidc_client.id
+  description = "The ID of the Upwind Identity Domain OIDC client app"
+  value       = oci_identity_domains_app.upwind_identity_domain_oidc_client.id
+}
+
+output "confidential_app_client_id" {
+  description = "The client ID of the confidential OAuth client app for workload identity federation"
+  value       = oci_identity_domains_app.upwind_identity_domain_oidc_client.name
+}
+
+output "confidential_app_client_secret" {
+  description = "The client secret of the confidential OAuth client app for workload identity federation"
+  value       = oci_identity_domains_app.upwind_identity_domain_oidc_client.client_secret
+  sensitive   = true
 }
