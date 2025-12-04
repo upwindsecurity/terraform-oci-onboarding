@@ -125,13 +125,13 @@ resource "oci_identity_policy" "aws_workload_federation_policy" {
 
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
   idcs_endpoint       = data.oci_identity_domain.upwind_identity_domain.url
-  issuer              = var.is_dev ? "https://upwind.dev" : "https://upwind.io"
+  issuer              = var.is_dev ? "upwind.dev" : "upwind.io"
   name                = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
   schemas             = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]
   type                = "JWT"
   active              = true
   allow_impersonation = true
-  oauth_clients       = [oci_identity_domains_app.upwind_identity_domain_oidc_client.id]
+  oauth_clients       = [oci_identity_domains_app.upwind_identity_domain_oidc_client.name]
   public_key_endpoint = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
   subject_type        = "User"
   description         = "Created by Terraform"

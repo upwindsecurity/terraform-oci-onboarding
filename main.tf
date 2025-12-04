@@ -30,6 +30,10 @@ module "tenant" {
   identity_domain_name            = var.identity_domain_name
   identity_domain_oidc_issuer_url = var.identity_domain_oidc_issuer_url
   aws_federated_group_name        = var.aws_federated_group_name
+
+  # Vault Configuration
+  oci_vault_id     = var.oci_vault_id
+  oci_vault_key_id = var.oci_vault_key_id
 }
 
 # Compartment deployment mode
@@ -65,5 +69,9 @@ module "compartment" {
   identity_domain_name            = var.identity_domain_name
   identity_domain_oidc_issuer_url = var.identity_domain_oidc_issuer_url
   aws_federated_group_name        = var.aws_federated_group_name
+
+  # Vault Configuration
+  oci_vault_id     = var.oci_vault_id
+  oci_vault_key_id = var.oci_vault_key_id
 }
 

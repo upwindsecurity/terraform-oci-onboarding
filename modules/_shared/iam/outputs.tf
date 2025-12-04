@@ -22,25 +22,28 @@ output "cloudscanner_user" {
 
 ### Vault Resources
 
-# output "vault" {
-#   description = "The Vault resource details."
-#   value       = oci_kms_vault.upwind_vault
-# }
+output "vault" {
+  description = "The Vault resource details (either created or existing)."
+  value       = var.oci_vault_id != "" ? data.oci_kms_vault.existing_vault[0] : oci_kms_vault.upwind_vault[0]
+}
 
-# output "vault_key" {
-#   description = "The Vault Key resource details."
-#   value       = oci_kms_key.upwind_vault_key
-# }
+output "vault_key" {
+  description = "The Vault Key resource details (either created or existing)."
+  value = var.oci_vault_key_id != "" ? data.oci_kms_key.existing_vault_key[0] : (
+    var.oci_vault_id != "" ? oci_kms_key.upwind_vault_key_existing_vault[0] : oci_kms_key.upwind_vault_key[0]
+  )
+}
 
-# output "oci_vault_secret" {
-#   description = "The secrets created in Vault."
-#   value = {
-#     upwind_client_id      = oci_vault_secret.upwind_client_id
-#     upwind_client_secret  = oci_vault_secret.upwind_client_secret
-#     scanner_client_id     = var.enable_cloudscanners ? oci_vault_secret.scanner_client_id[0] : null
-#     scanner_client_secret = var.enable_cloudscanners ? oci_vault_secret.scanner_client_secret[0] : null
-#   }
-# }
+output "oci_vault_secret" {
+  description = "The secrets created in Vault."
+  value = {
+    upwind_client_id      = oci_vault_secret.upwind_client_id
+    upwind_client_secret  = oci_vault_secret.upwind_client_secret
+    scanner_client_id     = var.enable_cloudscanners ? oci_vault_secret.scanner_client_id[0] : null
+    scanner_client_secret = var.enable_cloudscanners ? oci_vault_secret.scanner_client_secret[0] : null
+    terraform_tags        = oci_vault_secret.terraform_tags
+  }
+}
 
 ### Management Dynamic Group Permissions
 
@@ -130,14 +133,7 @@ output "identity_domain_federation_info" {
   value = {
     identity_domain_id   = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
     identity_domain_name = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
-    oidc_issuer_url = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : (
-      # Extract base URL from IDCS endpoint and add :443 port
-      # We need: https://idcs-xxx.identity.oraclecloud.com:443
-      try(
-        "${regex("^https://[^/]+", data.oci_identity_domain.upwind_identity_domain.url)}:443",
-        ""
-      )
-    )
+    oidc_issuer_url      = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : data.oci_identity_domain.upwind_identity_domain.url
     management_user_name = oci_identity_user.upwind_management_user.name
     federated_group_name = var.aws_federated_group_name
     aws_account_id       = var.is_dev ? "437279811180" : "627244208106"
