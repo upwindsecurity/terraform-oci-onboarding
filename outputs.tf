@@ -21,6 +21,17 @@ output "upwind_management_service_account_email" {
   value       = var.deployment_mode == "tenant" ? module.tenant[0].upwind_management_service_account_email : module.compartment[0].upwind_management_service_account_email
 }
 
+output "confidential_app_client_id" {
+  description = "The client ID of the confidential OAuth client app for workload identity federation"
+  value       = var.deployment_mode == "tenant" ? module.tenant[0].confidential_app_client_id : module.compartment[0].confidential_app_client_id
+}
+
+output "confidential_app_client_secret" {
+  description = "The client secret of the confidential OAuth client app for workload identity federation"
+  value       = var.deployment_mode == "tenant" ? module.tenant[0].confidential_app_client_secret : module.compartment[0].confidential_app_client_secret
+  sensitive   = true
+}
+
 # Tenant mode specific outputs
 output "oci_tenancy_id" {
   description = "The OCI tenancy ID (tenant mode only)"
