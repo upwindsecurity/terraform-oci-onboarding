@@ -44,6 +44,28 @@ variable "scanner_client_secret" {
   default     = ""
 }
 
+variable "oci_vault_id" {
+  description = "Optional OCID of an existing OCI Vault to use for storing secrets. If not provided, a new vault will be created."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.oci_vault_id == "" || can(regex("^ocid1\\.vault\\..*", var.oci_vault_id))
+    error_message = "The OCI vault ID must be a valid OCI vault OCID (starts with ocid1.vault)."
+  }
+}
+
+variable "oci_vault_key_id" {
+  description = "Optional OCID of an existing OCI Vault Key to use for encrypting secrets. If not provided and oci_vault_id is provided, a new key will be created in the existing vault."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.oci_vault_key_id == "" || can(regex("^ocid1\\.key\\..*", var.oci_vault_key_id))
+    error_message = "The OCI vault key ID must be a valid OCI key OCID (starts with ocid1.key)."
+  }
+}
+
 # endregion secrets
 
 # region workload identity federation

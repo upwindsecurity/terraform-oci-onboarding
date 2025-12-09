@@ -41,6 +41,12 @@ module "upwind_tenant" {
   # root_level_compartment_id defaults to tenancy_id
   # create_identity_domain defaults to true
 
+  # Vault Configuration (optional)
+  # If oci_vault_id is provided, secrets will be created in the existing vault
+  # If oci_vault_key_id is not provided, a new key will be created in the existing vault
+  oci_vault_id     = "ocid1.vault.oc1..xxxxx"  # Optional: use existing vault
+  oci_vault_key_id = "ocid1.key.oc1..xxxxx"    # Optional: use existing key (or create new key in vault)
+
   # Optional Configuration
   enable_cloudscanners = true
   enable_dspm_scanning = true
@@ -59,16 +65,16 @@ module "upwind_tenant" {
 
 - OCI Provider >= 5.0.0
 - Terraform >= 1.0.0
-- Existing Vault and Vault Key in OCI
 - Appropriate IAM permissions to create tenancy-level policies
 - Tenancy administrator access
+- For vault operations: permissions to create vaults and keys (if `oci_vault_id` is not provided) or access to existing vault (if `oci_vault_id` is provided)
 
 ## Resources Created
 
 - Tenancy-Level IAM Policies (5+)
 - Policy Attachments (3+)
 - CloudScanner Policies (3+, if enabled)
-- Shared IAM Module Resources
+- Shared IAM Module Resources (including vault, keys, and secrets)
 
 ## Security Model
 
