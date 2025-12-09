@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * **AG-0:** provide own vault/vault encryption key, various fixes ([#7](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/7)) ([1ef07d6](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/1ef07d61df65105e8381e8638088da28dccb4e62))
 
+## [1.0.2](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.0.1...v1.0.2) (2025-11-28)
+
+### Bug Fixes
+
+* **PE-6545:** fix IDCS outputs ([#5](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/5)) ([cc98b28](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/cc98b2895596e72be135fc231bdb8b1ee7afaed8))
+
 ## [1.0.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.0.0...v1.0.1) (2025-11-26)
 
 ### Bug Fixes
