@@ -37,9 +37,6 @@ resource "oci_identity_domain" "upwind_identity_domain" {
       condition     = var.identity_domain_display_name != "" || local.resource_suffix_hyphen != ""
       error_message = "Either identity_domain_display_name must be provided or resource_suffix must be set when creating an identity domain."
     }
-    # Prevent Terraform from trying to replace the domain if it already exists
-    # OCI Identity Domains cannot be deleted once in CREATED status
-    prevent_destroy = true
     # Ignore changes to description as it's not critical and may be updated externally
     ignore_changes = [description]
   }
