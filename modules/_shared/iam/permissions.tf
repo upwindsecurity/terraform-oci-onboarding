@@ -2,53 +2,6 @@ locals {
   # Define permission strings with direct dynamic group names and scope placeholders
   # Format: ${var.upwind_orchestrator_compartment_id} = compartment or tenancy scope placeholder
 
-  # Management Dynamic Group Permissions
-  # Tenancy-wide read access for resource discovery
-  mgmt_tenancy_read_permissions_list = [
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to read all-resources in tenancy"
-  ]
-
-  # Orchestrator compartment deployment permissions (compartment-scoped only)
-  mgmt_orchestrator_deploy_permissions_list = [
-    # Compute Instance resource creation permissions
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage instances in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage block-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage availability-domains in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Networking resource creation permissions
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage virtual-networks in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage route-tables in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage security-lists in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage internet-gateways in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage nat-gateways in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Functions creation permissions
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage functions in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage function-applications in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Events and rules creation permissions
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage events in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage rules in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Required for Terraform to check operation status
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to read work-requests in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Required basic service usage
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to use service-gateways in compartment id ${var.upwind_orchestrator_compartment_id}"
-  ]
-
-  # Tenancy-level IAM permissions (must be in separate policy at tenancy level)
-  mgmt_tenancy_iam_permissions_list = [
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage policies in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage dynamic-groups in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage users in tenancy"
-  ]
-
-  # Management secret access for deployment
-  mgmt_secret_access_permissions_list = [
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to manage secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to read secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.upwind_management_dg.name} to use vaults in compartment id ${var.upwind_orchestrator_compartment_id}"
-  ]
-
   # CloudScanner Dynamic Group Permissions
   # Tenancy-wide compute resource read access
   cloudscanner_tenancy_compute_read_permissions_list = var.enable_cloudscanners ? [

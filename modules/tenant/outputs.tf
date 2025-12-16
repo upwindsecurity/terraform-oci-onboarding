@@ -36,6 +36,11 @@ output "upwind_management_service_account_email" {
   value       = module.iam.upwind_management_user.email
 }
 
+output "upwind_ro_service_account_email" {
+  description = "Email of the reader service account"
+  value       = module.iam.upwind_ro_user.email
+}
+
 output "confidential_app_client_id" {
   description = "The client ID of the confidential OAuth client app for workload identity federation"
   value       = module.iam.confidential_app_client_id

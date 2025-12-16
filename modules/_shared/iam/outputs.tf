@@ -1,13 +1,13 @@
 ### Dynamic Groups and Users
 
-output "upwind_management_dg" {
-  description = "The Upwind Management Dynamic Group details."
-  value       = oci_identity_dynamic_group.upwind_management_dg
-}
-
 output "upwind_management_user" {
   description = "The Upwind Management User details."
   value       = oci_identity_user.upwind_management_user
+}
+
+output "upwind_ro_user" {
+  description = "The Upwind Reader User details."
+  value       = oci_identity_user.upwind_ro_user
 }
 
 output "cloudscanner_dg" {
@@ -43,28 +43,6 @@ output "oci_vault_secret" {
     scanner_client_secret = var.enable_cloudscanners ? oci_vault_secret.scanner_client_secret[0] : null
     terraform_tags        = oci_vault_secret.terraform_tags
   }
-}
-
-### Management Dynamic Group Permissions
-
-output "mgmt_tenancy_read_permissions" {
-  description = "Management dynamic group tenancy-wide read permissions."
-  value       = local.mgmt_tenancy_read_permissions_list
-}
-
-output "mgmt_orchestrator_deploy_permissions" {
-  description = "Management dynamic group orchestrator compartment deployment permissions."
-  value       = local.mgmt_orchestrator_deploy_permissions_list
-}
-
-output "mgmt_tenancy_iam_permissions" {
-  description = "Management dynamic group tenancy-level IAM permissions."
-  value       = local.mgmt_tenancy_iam_permissions_list
-}
-
-output "mgmt_secret_access_permissions" {
-  description = "Management dynamic group secret access permissions."
-  value       = local.mgmt_secret_access_permissions_list
 }
 
 ### CloudScanner Dynamic Group Permissions
@@ -135,7 +113,7 @@ output "identity_domain_federation_info" {
     identity_domain_name = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
     oidc_issuer_url      = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : data.oci_identity_domain.upwind_identity_domain.url
     management_user_name = oci_identity_user.upwind_management_user.name
-    federated_group_name = var.aws_federated_group_name
+    federated_group_name = oci_identity_domains_group.upwind_federated_mgmt_group.display_name
     aws_account_id       = var.is_dev ? "437279811180" : "627244208106"
   }
   sensitive = false
@@ -160,4 +138,46 @@ output "confidential_app_client_secret" {
   description = "The client secret of the confidential OAuth client app for workload identity federation"
   value       = oci_identity_domains_app.upwind_identity_domain_oidc_client.client_secret
   sensitive   = true
+}
+
+### Federated Management Group Permissions
+
+output "federated_mgmt_group" {
+  description = "The Identity Domain group for federated management users."
+  value       = oci_identity_domains_group.upwind_federated_mgmt_group
+}
+
+output "federated_mgmt_group_orchestrator_deploy_permissions" {
+  description = "Federated management group orchestrator compartment deployment permissions (combined list for backward compatibility)."
+  value       = local.federated_mgmt_group_orchestrator_deploy_permissions_list
+}
+
+output "federated_mgmt_group_orchestrator_deploy_compute_permissions" {
+  description = "Federated management group orchestrator compartment compute deployment permissions (use format() with compartment_id)."
+  value       = local.federated_mgmt_group_orchestrator_deploy_compute_permissions_list
+}
+
+output "federated_mgmt_group_orchestrator_deploy_network_permissions" {
+  description = "Federated management group orchestrator compartment network deployment permissions (use format() with compartment_id)."
+  value       = local.federated_mgmt_group_orchestrator_deploy_network_permissions_list
+}
+
+output "federated_mgmt_group_orchestrator_deploy_functions_permissions" {
+  description = "Federated management group orchestrator compartment functions deployment permissions (use format() with compartment_id)."
+  value       = local.federated_mgmt_group_orchestrator_deploy_functions_permissions_list
+}
+
+output "federated_mgmt_group_tenancy_read_permissions" {
+  description = "Federated management group tenancy-wide read permissions (tenant mode only)."
+  value       = local.federated_mgmt_group_tenancy_read_permissions_list
+}
+
+output "federated_mgmt_group_tenancy_iam_permissions" {
+  description = "Federated management group tenancy-level IAM permissions (tenant mode only)."
+  value       = local.federated_mgmt_group_tenancy_iam_permissions_list
+}
+
+output "federated_mgmt_group_secret_access_permissions" {
+  description = "Federated management group secret access permissions."
+  value       = local.federated_mgmt_group_secret_access_permissions_list
 }
