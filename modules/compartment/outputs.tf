@@ -7,36 +7,36 @@ output "iam_module" {
 
 ### Orchestrator Compartment Policies
 
-output "mgmt_dg_orchestrator_deploy_compute" {
-  description = "Management dynamic group orchestrator compartment compute deployment policy."
-  value       = oci_identity_policy.mgmt_dg_orchestrator_deploy_compute
+output "mgmt_group_orchestrator_deploy_compute" {
+  description = "Management group orchestrator compartment compute deployment policy."
+  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute
 }
 
-output "mgmt_dg_orchestrator_deploy_network" {
-  description = "Management dynamic group orchestrator compartment network deployment policy."
-  value       = oci_identity_policy.mgmt_dg_orchestrator_deploy_network
+output "mgmt_group_orchestrator_deploy_network" {
+  description = "Management group orchestrator compartment network deployment policy."
+  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_network
 }
 
-output "mgmt_dg_orchestrator_deploy_functions" {
-  description = "Management dynamic group orchestrator compartment functions deployment policy."
-  value       = oci_identity_policy.mgmt_dg_orchestrator_deploy_functions
+output "mgmt_group_orchestrator_deploy_functions" {
+  description = "Management group orchestrator compartment functions deployment policy."
+  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions
 }
 
-output "mgmt_dg_secret_access_policy" {
-  description = "Management dynamic group secret access policy."
-  value       = oci_identity_policy.mgmt_dg_secret_access_policy
+output "mgmt_group_secret_access_policy" {
+  description = "Management group secret access policy."
+  value       = oci_identity_policy.mgmt_group_secret_access_policy
 }
 
 ### Target Compartment Policies
 
-output "upwind_management_dg_compartment_viewer_policies" {
-  description = "The compartment viewer policies for the management dynamic group (one per target compartment)."
-  value       = oci_identity_policy.upwind_management_dg_compartment_viewer_policy
+output "upwind_management_group_compartment_viewer_policies" {
+  description = "The compartment viewer policies for the management group (one per target compartment)."
+  value       = oci_identity_policy.upwind_management_group_compartment_viewer_policy
 }
 
-output "upwind_management_dg_asset_viewer_policies" {
-  description = "The asset viewer policies for the management dynamic group (one per target compartment)."
-  value       = oci_identity_policy.upwind_management_dg_asset_viewer_policy
+output "upwind_management_group_asset_viewer_policies" {
+  description = "The asset viewer policies for the management group (one per target compartment)."
+  value       = oci_identity_policy.upwind_management_group_asset_viewer_policy
 }
 
 ### CloudScanner Orchestrator Compartment Policies
@@ -93,6 +93,11 @@ output "identity_domain_oidc_issuer_url" {
 output "upwind_management_service_account_email" {
   description = "Email of the management service account"
   value       = module.iam.upwind_management_user.email
+}
+
+output "upwind_ro_service_account_email" {
+  description = "Email of the reader service account"
+  value       = module.iam.upwind_ro_user.email
 }
 
 output "confidential_app_client_id" {

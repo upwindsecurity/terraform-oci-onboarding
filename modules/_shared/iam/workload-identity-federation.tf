@@ -46,10 +46,13 @@ resource "oci_identity_domain" "upwind_identity_domain" {
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
-  idcs_endpoint   = data.oci_identity_domain.upwind_identity_domain.url
-  display_name    = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
-  active          = true
-  schemas         = ["urn:ietf:params:scim:schemas:oracle:idcs:App"]
+  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  display_name  = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
+  active        = true
+  schemas = [
+    "urn:ietf:params:scim:schemas:oracle:idcs:App",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+  ]
   is_oauth_client = true
   client_type     = "confidential"
   allowed_grants  = ["client_credentials"]
@@ -64,7 +67,6 @@ resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
 # This user corresponds to the OCI IAM user and is used for token exchange
 resource "oci_identity_domains_user" "upwind_management_user" {
   idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
-  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:User"]
   user_name     = oci_identity_user.upwind_management_user.email
   description   = "deployment"
 
@@ -72,8 +74,39 @@ resource "oci_identity_domains_user" "upwind_management_user" {
     service_user = true
   }
 
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
+  ]
+
   depends_on = [
     oci_identity_user.upwind_management_user,
+    oci_identity_domain.upwind_identity_domain
+  ]
+}
+
+resource "oci_identity_domains_user" "upwind_ro_user" {
+  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  user_name     = oci_identity_user.upwind_ro_user.email
+  description   = "reader"
+
+  urnietfparamsscimschemasoracleidcsextensionuser_user {
+    service_user = true
+  }
+
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
+  ]
+
+  depends_on = [
+    oci_identity_user.upwind_ro_user,
     oci_identity_domain.upwind_identity_domain
   ]
 }
@@ -81,7 +114,6 @@ resource "oci_identity_domains_user" "upwind_management_user" {
 resource "oci_identity_domains_user" "cloudscanner_user" {
   count         = var.enable_cloudscanners ? 1 : 0
   idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
-  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:User"]
   user_name     = oci_identity_user.cloudscanner_user[0].email
   description   = "cloudscanner"
 
@@ -89,38 +121,18 @@ resource "oci_identity_domains_user" "cloudscanner_user" {
     service_user = true
   }
 
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
+  ]
+
   depends_on = [
     oci_identity_user.cloudscanner_user,
     oci_identity_domain.upwind_identity_domain
   ]
-}
-
-# Policy to allow federated users from AWS to assume the management user role
-# This enables AWS workloads to authenticate to OCI using OIDC tokens
-# NOTE: The policy compartment_id uses root_level_compartment_id
-# For tenant module: tenancy_id (allows "read all-resources in tenancy")
-# For compartment module: orchestrator compartment_id (limited scope, cannot include tenancy-wide statements)
-resource "oci_identity_policy" "aws_workload_federation_policy" {
-  compartment_id = var.root_level_compartment_id
-  name           = format("aws-workload-federation-%s", local.resource_suffix_hyphen)
-  description    = "Allow AWS workloads to authenticate to OCI via Identity Domain OIDC federation"
-
-  statements = concat(
-    # Only include tenancy-wide read if policy is at tenancy level
-    can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to read all-resources in tenancy"
-    ] : [],
-    # Allow federated users to deploy in orchestrator compartment
-    [
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to manage instance-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to manage volume-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to manage virtual-network-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to manage functions-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-      # Allow access to secrets for retrieving credentials
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to read secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
-      "Allow group ${local.identity_domain_name_prefix}${var.aws_federated_group_name} to use vaults in compartment id ${var.upwind_orchestrator_compartment_id}"
-    ]
-  )
 }
 
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
@@ -138,7 +150,11 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
 
   dynamic "impersonation_service_users" {
     for_each = {
-      for u in [oci_identity_domains_user.upwind_management_user, var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null] :
+      for u in [
+        oci_identity_domains_user.upwind_management_user,
+        oci_identity_domains_user.upwind_ro_user,
+        var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null
+      ] :
       u.user_name => u
     }
     content {
@@ -149,7 +165,9 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
 
   depends_on = [
     oci_identity_user.upwind_management_user,
+    oci_identity_user.upwind_ro_user,
     oci_identity_domains_user.upwind_management_user,
+    oci_identity_domains_user.upwind_ro_user,
     oci_identity_domains_app.upwind_identity_domain_oidc_client
   ]
 }
