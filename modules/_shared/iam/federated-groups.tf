@@ -132,18 +132,6 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
   statements     = local.federated_mgmt_group_tenancy_read_permissions_list
 }
 
-# Federated management group tenancy-level "god mode" permission (only if at tenancy level)
-# This must be in a separate policy created at the tenancy level
-resource "oci_identity_policy" "federated_mgmt_group_tenancy_god_mode" {
-  count          = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? 1 : 0
-  compartment_id = var.root_level_compartment_id
-  name           = format("federated-mgmt-group-tenancy-god-mode-%s", local.resource_suffix_hyphen)
-  description    = "Allow federated management group to manage all resources in tenancy (temporary)"
-  statements = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage all-resources in tenancy"
-  ]
-}
-
 # Federated management group needs orchestrator compartment deployment permissions
 # Split into multiple policies to match dynamic group structure and avoid OCI errors
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute" {
