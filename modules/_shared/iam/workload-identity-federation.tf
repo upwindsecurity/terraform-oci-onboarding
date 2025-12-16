@@ -46,10 +46,10 @@ resource "oci_identity_domain" "upwind_identity_domain" {
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
-  idcs_endpoint   = data.oci_identity_domain.upwind_identity_domain.url
-  display_name    = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
-  active          = true
-  schemas         = [
+  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  display_name  = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
+  active        = true
+  schemas = [
     "urn:ietf:params:scim:schemas:oracle:idcs:App",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
   ]
