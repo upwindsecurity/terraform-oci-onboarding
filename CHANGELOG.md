@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.1.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.2...v1.1.3) (2025-12-16)
+
+### Bug Fixes
+
+* **AG-0:** make identity domain deleteable, consolidate duplicate policies ([#14](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/14)) ([670959f](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/670959f947dce753431baf177e3e829e2fd0b032))
+
 ## [1.1.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.0...v1.1.1) (2025-12-16)
 
 ### Bug Fixes
