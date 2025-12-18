@@ -12,7 +12,7 @@ locals {
     var.identity_domain_name != "" ? "'${var.identity_domain_name}'/" : ""
   )
 
-  upwind_bucket = var.is_dev ? "https://get.upwind.dev" : "https://get.upwind.io"
+  upwind_bucket       = var.is_dev ? "https://get.upwind.dev" : "https://get.upwind.io"
   public_key_endpoint = var.upwind_region == "us" ? local.upwind_bucket : replace(local.upwind_bucket, ".upwind.", "${var.upwind_region}.upwind.")
 }
 
