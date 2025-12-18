@@ -15,8 +15,8 @@ module "iam" {
   resource_suffix        = var.resource_suffix
   enable_cloudscanners   = var.enable_cloudscanners
   tags                   = var.tags
-
-  is_dev = var.is_dev
+  upwind_region          = var.upwind_region
+  is_dev                 = var.is_dev
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.upwind_orchestrator_compartment_id
