@@ -60,6 +60,17 @@ variable "is_dev" {
   default     = false
 }
 
+variable "upwind_region" {
+  description = "The region of the Upwind organization."
+  type        = string
+  default     = "us"
+
+  validation {
+    condition     = var.upwind_region == "us" || var.upwind_region == "eu" || var.upwind_region == "me" || var.upwind_region == "pdc01"
+    error_message = "The Upwind region must be one of: us, eu, me, pdc01."
+  }
+}
+
 # endregion upwind
 
 # region oci

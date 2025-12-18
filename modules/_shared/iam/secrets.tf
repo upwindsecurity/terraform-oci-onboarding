@@ -20,7 +20,7 @@ resource "oci_kms_vault" "upwind_vault" {
   compartment_id = local.compartment_id
   display_name   = format("upwind-vault-%s", local.resource_suffix_hyphen)
   # Required for software-only keys
-  vault_type = "VIRTUAL_PRIVATE"
+  vault_type = "DEFAULT"
 }
 
 # Create the Vault Key for encryption when using a newly created vault
