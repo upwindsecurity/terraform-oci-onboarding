@@ -13,6 +13,7 @@ module "tenant" {
   enable_cloudscanners   = var.enable_cloudscanners
   is_dev                 = var.is_dev
   tags                   = var.tags
+  upwind_region          = var.upwind_region
 
   # OCI Configuration
   oci_region                      = var.oci_region
@@ -51,6 +52,7 @@ module "compartment" {
   enable_cloudscanners   = var.enable_cloudscanners
   is_dev                 = var.is_dev
   tags                   = var.tags
+  upwind_region          = var.upwind_region
 
   # OCI Configuration
   oci_region                         = var.oci_region
