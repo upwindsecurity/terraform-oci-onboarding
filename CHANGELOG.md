@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.2.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.5...v1.2.0) (2025-12-22)
+
+### Features
+
+* **AG-4310:** add vault ID to outputs ([#20](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/20)) ([4e78c08](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/4e78c080bec0e85a7af099d3d2c92765ec9ebc7f))
+
+## [1.1.5](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.4...v1.1.5) (2025-12-18)
+
+### Bug Fixes
+
+* **AG-0:** pass new variable to modules ([#18](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/18)) ([a2f6101](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/a2f610171e2c15791d24c11ca10dc499508f60b3))
+
+## [1.1.4](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.3...v1.1.4) (2025-12-18)
+
+### Bug Fixes
+
+* **AG-0:** update vault and public key region ([#16](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/16)) ([5d5750d](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/5d5750d4b1718426f3914043c698c29233cff904))
+
+## [1.1.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.2...v1.1.3) (2025-12-16)
+
+### Bug Fixes
+
+* **AG-0:** make identity domain deleteable, consolidate duplicate policies ([#14](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/14)) ([670959f](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/670959f947dce753431baf177e3e829e2fd0b032))
+
 ## [1.1.2](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.1...v1.1.2) (2025-12-16)
 
 ### Bug Fixes
