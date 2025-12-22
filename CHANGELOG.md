@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.2.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.5...v1.2.0) (2025-12-22)
+
+### Features
+
+* **AG-4310:** add vault ID to outputs ([#20](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/20)) ([4e78c08](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/4e78c080bec0e85a7af099d3d2c92765ec9ebc7f))
+
 ## [1.1.2](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.1...v1.1.2) (2025-12-16)
 
 ### Bug Fixes
