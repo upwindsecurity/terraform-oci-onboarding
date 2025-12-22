@@ -32,6 +32,12 @@ output "confidential_app_client_secret" {
   sensitive   = true
 }
 
+# Vault output
+output "vault_id" {
+  description = "The OCID of the Vault (either created or provided by user)"
+  value       = var.deployment_mode == "tenant" ? module.tenant[0].vault_id : module.compartment[0].vault_id
+}
+
 # Tenant mode specific outputs
 output "oci_tenancy_id" {
   description = "The OCI tenancy ID (tenant mode only)"
