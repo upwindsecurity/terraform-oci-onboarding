@@ -11,6 +11,9 @@ locals {
     ) : (
     var.identity_domain_name != "" ? "'${var.identity_domain_name}'/" : ""
   )
+
+  upwind_bucket       = var.is_dev ? "https://get.upwind.dev" : "https://get.upwind.io"
+  public_key_endpoint = var.upwind_region == "us" || var.upwind_region == "pdc01" ? local.upwind_bucket : replace(local.upwind_bucket, ".upwind.", ".${var.upwind_region}.upwind.")
 }
 
 
@@ -141,7 +144,7 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
   active              = true
   allow_impersonation = true
   oauth_clients       = [oci_identity_domains_app.upwind_identity_domain_oidc_client.name]
-  public_key_endpoint = var.is_dev ? "https://get.upwind.dev/auth/oracle/jwks.json" : "https://get.upwind.io/auth/oracle/jwks.json"
+  public_key_endpoint = "${local.public_key_endpoint}/auth/oracle/jwks-${var.upwind_region}.json"
   subject_type        = "User"
   description         = "Created by Terraform"
 

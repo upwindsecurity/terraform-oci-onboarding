@@ -113,8 +113,13 @@ locals {
   ]
 
   # Federated reader group tenancy-wide read permissions
+  # Includes inspect compartments to allow access to compartments, and explicit instance-family read
+  # to ensure ListInstances operations work correctly
   federated_reader_group_tenancy_read_permissions_list = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read all-resources in tenancy"
+    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read all-resources in tenancy",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to inspect compartments in tenancy",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read instance-family in tenancy",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read instance-images in tenancy",
   ]
 
 }
