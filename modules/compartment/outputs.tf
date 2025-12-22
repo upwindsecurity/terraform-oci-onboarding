@@ -111,6 +111,13 @@ output "confidential_app_client_secret" {
   sensitive   = true
 }
 
+### Vault
+
+output "vault_id" {
+  description = "The OCID of the Vault (either created or provided by user)"
+  value       = module.iam.vault.id
+}
+
 ### Target Compartments
 
 output "target_compartment_ids" {
