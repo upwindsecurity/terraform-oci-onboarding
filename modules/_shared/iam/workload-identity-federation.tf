@@ -25,6 +25,11 @@ data "oci_identity_domain" "upwind_identity_domain" {
   domain_id = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
 }
 
+# Get all subscribed regions for the tenancy
+data "oci_identity_region_subscriptions" "tenancy_regions" {
+  tenancy_id = var.oci_tenancy_id
+}
+
 # Create Identity Domain for workload identity federation
 # NOTE: OCI Identity Domains cannot be deleted once in CREATED status.
 resource "oci_identity_domain" "upwind_identity_domain" {
@@ -43,6 +48,23 @@ resource "oci_identity_domain" "upwind_identity_domain" {
     # Ignore changes to description as it's not critical and may be updated externally
     ignore_changes = [description]
   }
+}
+
+# Replicate Identity Domain to all subscribed regions (excluding home region)
+# NOTE: Replication can only be initiated when the domain is ACTIVE
+resource "oci_identity_domain_replication_to_region" "upwind_identity_domain_replication" {
+  for_each = var.create_identity_domain ? {
+    for rs in data.oci_identity_region_subscriptions.tenancy_regions.region_subscriptions :
+    rs.region_name => rs.region_name
+    if rs.region_name != var.oci_region && !rs.is_home_region
+  } : {}
+
+  domain_id      = oci_identity_domain.upwind_identity_domain[0].id
+  replica_region = each.value
+
+  depends_on = [
+    oci_identity_domain.upwind_identity_domain
+  ]
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
