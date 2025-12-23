@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.3.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.2.0...v1.3.0) (2025-12-23)
+
+### Features
+
+* **AG-4324:** replicate domains to all regions, reduce permissions ([#22](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/22)) ([52083f6](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/52083f6e4fd2bf99d062ad2f06a4a91ec457c46a))
+
 ## [1.2.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.1.5...v1.2.0) (2025-12-22)
 
 ### Features
