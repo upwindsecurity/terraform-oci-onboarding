@@ -147,11 +147,6 @@ output "federated_mgmt_group" {
   value       = oci_identity_domains_group.upwind_federated_mgmt_group
 }
 
-output "federated_mgmt_group_orchestrator_deploy_permissions" {
-  description = "Federated management group orchestrator compartment deployment permissions (combined list for backward compatibility)."
-  value       = local.federated_mgmt_group_orchestrator_deploy_permissions_list
-}
-
 output "federated_mgmt_group_orchestrator_deploy_compute_permissions" {
   description = "Federated management group orchestrator compartment compute deployment permissions (use format() with compartment_id)."
   value       = local.federated_mgmt_group_orchestrator_deploy_compute_permissions_list

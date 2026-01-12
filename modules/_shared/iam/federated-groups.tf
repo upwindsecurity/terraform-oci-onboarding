@@ -45,7 +45,9 @@ locals {
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-configurations in compartment id %s",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-family in compartment id %s",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage volume-family in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id %s"
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id %s",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read availability-domains in compartment id %s",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read images in compartment id %s"
   ]
 
   federated_mgmt_group_orchestrator_deploy_network_permissions_list = [
@@ -55,39 +57,6 @@ locals {
   federated_mgmt_group_orchestrator_deploy_functions_permissions_list = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions-family in compartment id %s",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage cloudevents-rules in compartment id %s"
-  ]
-
-  # Combined list for backward compatibility (used by federated-groups.tf policies)
-  federated_mgmt_group_orchestrator_deploy_permissions_list = [
-    # Compartment inspection (required to access the compartment)
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to inspect compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Compute Instance resource creation permissions
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instances in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage block-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage availability-domains in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Required to reference images and subnets in instance configurations
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read instance-images in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Networking resource creation permissions
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage virtual-networks in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage route-tables in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage security-lists in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage internet-gateways in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage nat-gateways in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Functions creation permissions
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage function-applications in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Events and rules creation permissions
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage events in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage rules in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Required for Terraform to check operation status
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # Required basic service usage
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use service-gateways in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
 
   # Federated management group tenancy-wide read permissions (only if at tenancy level)
