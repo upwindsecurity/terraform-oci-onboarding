@@ -23,3 +23,8 @@ locals {
     if can(regex("^[a-zA-Z0-9_.-]{1,100}$", k)) && can(regex("^[a-zA-Z0-9_.-]{0,100}$", v))
   }
 }
+
+# Get all subscribed regions for the tenancy
+data "oci_identity_region_subscriptions" "tenancy_regions" {
+  tenancy_id = var.oci_tenancy_id
+}

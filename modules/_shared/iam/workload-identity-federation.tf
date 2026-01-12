@@ -25,11 +25,6 @@ data "oci_identity_domain" "upwind_identity_domain" {
   domain_id = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
 }
 
-# Get all subscribed regions for the tenancy
-data "oci_identity_region_subscriptions" "tenancy_regions" {
-  tenancy_id = var.oci_tenancy_id
-}
-
 # Create Identity Domain for workload identity federation
 # NOTE: OCI Identity Domains cannot be deleted once in CREATED status.
 resource "oci_identity_domain" "upwind_identity_domain" {
