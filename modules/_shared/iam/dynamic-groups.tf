@@ -11,6 +11,7 @@ resource "oci_identity_dynamic_group" "cloudscanner_dg" {
   description    = "Dynamic group used by CloudScanners for scanning across compartments and scaling operations"
   # TODO: all compartments for resource discovery, but scanning operations in orchestrator compartment
   matching_rule = "ALL {instance.compartment.id != ''}"
+  freeform_tags = local.validated_tags
 
   lifecycle {
     precondition {
@@ -32,6 +33,7 @@ resource "oci_identity_user" "upwind_management_user" {
   name           = format("upwind-mgmt-%s", local.resource_suffix_hyphen)
   description    = "User for Upwind management operations - can be assumed by dynamic groups"
   email          = format("upwind-mgmt-%s@noreply.upwind.io", local.resource_suffix_hyphen)
+  freeform_tags  = local.validated_tags
 
   lifecycle {
     precondition {
@@ -46,6 +48,7 @@ resource "oci_identity_user" "upwind_ro_user" {
   name           = format("upwind-ro-%s", local.resource_suffix_hyphen)
   description    = "User for Upwind reader operations - can be assumed by dynamic groups"
   email          = format("upwind-ro-%s@noreply.upwind.io", local.resource_suffix_hyphen)
+  freeform_tags  = local.validated_tags
 
   lifecycle {
     precondition {
@@ -61,6 +64,7 @@ resource "oci_identity_user" "cloudscanner_user" {
   name           = format("upwind-cs-%s", local.resource_suffix_hyphen)
   description    = "User for CloudScanner operations - can be assumed by dynamic groups"
   email          = format("upwind-cs-%s@noreply.upwind.io", local.resource_suffix_hyphen)
+  freeform_tags  = local.validated_tags
 
   lifecycle {
     precondition {

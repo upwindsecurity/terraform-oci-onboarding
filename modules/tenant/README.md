@@ -39,7 +39,8 @@ module "upwind_tenant" {
 
   # Workload Identity Federation (optional - has defaults)
   # root_level_compartment_id defaults to tenancy_id
-  # create_identity_domain defaults to true
+  # oci_domain_id: if provided, uses existing domain; if not provided, creates new domain
+  oci_domain_id = "ocid1.domain.oc1..xxxxx"  # Optional: use existing domain
 
   # Vault Configuration (optional)
   # If oci_vault_id is provided, secrets will be created in the existing vault
@@ -53,21 +54,57 @@ module "upwind_tenant" {
   resource_suffix      = "prod"
   is_dev               = false
 
-  # Tags
+  # Tags (optional)
+  # User-provided tags override default_tags if keys conflict
   tags = {
     environment = "production"
     team        = "security"
   }
+
+  # Default tags (optional)
+  # Applied to all resources, can be overridden by tags
+  default_tags = {
+    managed_by = "terraform"
+    component  = "upwind"
+  }
 }
 ```
 
-## Requirements
+## Prerequisites
+
+The deploying user must be an **Oracle Cloud Infrastructure (OCI) administrator** with the following requirements:
+
+### Required IAM Permissions
+
+The deploying user must be a member of a group (typically "Administrators") that has the following policy statement at the tenancy level:
+
+```
+Allow group Administrators to manage all-resources in tenancy
+```
+
+Alternatively, for more granular control, the following specific permissions are required:
+
+```
+Allow group Administrators to manage dynamic-groups in tenancy
+Allow group Administrators to manage policies in tenancy
+Allow group Administrators to manage users in tenancy
+Allow group Administrators to manage groups in tenancy
+Allow group Administrators to manage identity-providers in tenancy
+Allow group Administrators to manage identity-domains in tenancy
+Allow group Administrators to manage vaults in tenancy
+Allow group Administrators to manage keys in tenancy
+Allow group Administrators to manage secrets in tenancy
+Allow group Administrators to manage compartments in tenancy
+```
+
+**Note**: Even if you are in the "Administrators" group, OCI requires explicit IAM policies to be created. Being an administrator does not automatically grant all permissions.
+
+### Additional Requirements
 
 - OCI Provider >= 5.0.0
 - Terraform >= 1.0.0
-- Appropriate IAM permissions to create tenancy-level policies
-- Tenancy administrator access
 - For vault operations: permissions to create vaults and keys (if `oci_vault_id` is not provided) or access to existing vault (if `oci_vault_id` is provided)
+- For workload identity federation: permissions to create identity domains (if `oci_domain_id` is not provided) or access to existing identity domain (if `oci_domain_id` is provided)
 
 ## Resources Created
 

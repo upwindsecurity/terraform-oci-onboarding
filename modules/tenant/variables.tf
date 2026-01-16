@@ -113,25 +113,19 @@ variable "root_level_compartment_id" {
 }
 
 # region workload identity federation
-variable "create_identity_domain" {
-  description = "Create a new OCI Identity Domain. If false, identity_domain_id must be provided."
-  type        = bool
-  default     = true
-}
-
-variable "identity_domain_id" {
-  description = "The OCID of the OCI Identity Domain to use for federation. Required if create_identity_domain is false."
+variable "oci_domain_id" {
+  description = "The OCID of an existing OCI Identity Domain to use for federation. If provided, domain creation is skipped and this domain is used. If not provided, a new domain will be created."
   type        = string
   default     = ""
 
   validation {
-    condition     = var.identity_domain_id == "" || can(regex("^ocid1\\.domain\\..*", var.identity_domain_id))
-    error_message = "The Identity Domain ID must be a valid OCI domain OCID (starts with ocid1.domain)."
+    condition     = var.oci_domain_id == "" || can(regex("^ocid1\\.domain\\..*", var.oci_domain_id))
+    error_message = "The OCI Domain ID must be valid (starts with ocid1.domain)."
   }
 }
 
 variable "identity_domain_display_name" {
-  description = "Display name for the identity domain when creating a new one. Required if create_identity_domain is true."
+  description = "Display name for the identity domain when creating a new one."
   type        = string
   default     = ""
 }
@@ -210,7 +204,16 @@ variable "oci_vault_key_id" {
 # endregion oci
 
 variable "tags" {
-  description = "A map of tags to apply to all resources"
+  description = "A map of tags to apply to all resources. These tags will override default_tags if keys conflict."
   type        = map(string)
   default     = {}
+}
+
+variable "default_tags" {
+  description = "Default tags applied to all resources (can be overridden by tags). Defaults to managed_by=terraform and component=upwind."
+  type        = map(string)
+  default = {
+    managed_by = "terraform"
+    component  = "upwind"
+  }
 }

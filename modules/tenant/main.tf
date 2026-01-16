@@ -14,6 +14,16 @@ locals {
 
   # Create resource suffixes that include both org_id and user-provided suffix
   resource_suffix_hyphen = format("%s%s", local.org_id_truncated, var.resource_suffix == "" ? "" : "-${var.resource_suffix}")
+
+  # Merge default tags with user-provided tags
+  # User tags override defaults if keys conflict
+  merged_tags = merge(var.default_tags, var.tags)
+
+  # Common validation for tags
+  validated_tags = {
+    for k, v in local.merged_tags : k => v
+    if can(regex("^[a-zA-Z0-9_.-]{1,100}$", k)) && can(regex("^[a-zA-Z0-9_.-]{0,100}$", v))
+  }
 }
 
 data "oci_identity_tenancy" "tenancy" {

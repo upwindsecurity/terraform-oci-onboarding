@@ -55,9 +55,37 @@ The shared modules implement a comprehensive security model:
 4. **Audit Trail**: All operations are logged and auditable
 5. **Multi-Tenant**: Support for multiple Upwind organizations
 
-## Requirements
+## Prerequisites
+
+The deploying user must be an **Oracle Cloud Infrastructure (OCI) administrator** with the following requirements:
+
+### Required IAM Permissions
+
+The deploying user must be a member of a group (typically "Administrators") that has the following policy statement at the tenancy level:
+
+```
+Allow group Administrators to manage all-resources in tenancy
+```
+
+Alternatively, for more granular control, the following specific permissions are required:
+
+```
+Allow group Administrators to manage dynamic-groups in tenancy
+Allow group Administrators to manage policies in tenancy
+Allow group Administrators to manage users in tenancy
+Allow group Administrators to manage groups in tenancy
+Allow group Administrators to manage identity-providers in tenancy
+Allow group Administrators to manage identity-domains in tenancy
+Allow group Administrators to manage vaults in tenancy
+Allow group Administrators to manage keys in tenancy
+Allow group Administrators to manage secrets in tenancy
+Allow group Administrators to manage compartments in tenancy
+```
+
+**Note**: Even if you are in the "Administrators" group, OCI requires explicit IAM policies to be created. Being an administrator does not automatically grant all permissions.
+
+### Additional Requirements
 
 - OCI Provider >= 7.0.0
 - Terraform >= 1.0.0
-- Appropriate IAM permissions to create dynamic groups, users, and policies
-- For workload identity federation: permissions to create identity domains (if `create_identity_domain = true`) or access to existing identity domain
+- For workload identity federation: permissions to create identity domains (if `oci_domain_id` is not provided) or access to existing identity domain (if `oci_domain_id` is provided)

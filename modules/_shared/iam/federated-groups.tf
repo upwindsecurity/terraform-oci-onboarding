@@ -7,11 +7,22 @@
 resource "oci_identity_domains_group" "upwind_federated_mgmt_group" {
   idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
   display_name  = format("upwind-federated-mgmt-%s", local.resource_suffix_hyphen)
-  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:Group"]
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:Group",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+  ]
 
   members {
     type  = "User"
     value = oci_identity_domains_user.upwind_management_user.id
+  }
+
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
   }
 
   depends_on = [
@@ -23,11 +34,22 @@ resource "oci_identity_domains_group" "upwind_federated_mgmt_group" {
 resource "oci_identity_domains_group" "upwind_federated_reader_group" {
   idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
   display_name  = format("upwind-federated-reader-%s", local.resource_suffix_hyphen)
-  schemas       = ["urn:ietf:params:scim:schemas:core:2.0:Group"]
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:Group",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+  ]
 
   members {
     type  = "User"
     value = oci_identity_domains_user.upwind_ro_user.id
+  }
+
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
   }
 
   depends_on = [
@@ -96,6 +118,7 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
   name           = format("federated-mgmt-group-tenancy-read-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to read all resources in tenancy"
   statements     = local.federated_mgmt_group_tenancy_read_permissions_list
+  freeform_tags  = local.validated_tags
 }
 
 # Federated management group needs orchestrator compartment deployment permissions
@@ -104,6 +127,7 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-compute-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage compute resources in orchestrator compartment"
+  freeform_tags  = local.validated_tags
   statements = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage auto-scaling-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
@@ -130,6 +154,7 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_network
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-network-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage network resources in orchestrator compartment"
+  freeform_tags  = local.validated_tags
   statements = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
@@ -142,6 +167,7 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functio
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-functions-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage functions and events in orchestrator compartment"
+  freeform_tags  = local.validated_tags
   statements = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions-family in compartment id ${var.upwind_orchestrator_compartment_id}",
@@ -156,6 +182,7 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_iam_policy" {
   name           = format("federated-mgmt-group-tenancy-iam-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage IAM resources in tenancy"
   statements     = local.federated_mgmt_group_tenancy_iam_permissions_list
+  freeform_tags  = local.validated_tags
 }
 
 # Federated management group secret access
@@ -164,6 +191,7 @@ resource "oci_identity_policy" "federated_mgmt_group_secret_access_policy" {
   name           = format("federated-mgmt-group-secret-access-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to access secrets"
   statements     = local.federated_mgmt_group_secret_access_permissions_list
+  freeform_tags  = local.validated_tags
 }
 
 # Federated reader group tenancy-wide read access (tenant mode only)
@@ -173,5 +201,6 @@ resource "oci_identity_policy" "federated_reader_group_tenancy_read_policy" {
   name           = format("federated-reader-group-tenancy-read-%s", local.resource_suffix_hyphen)
   description    = "Allow federated reader group to read all resources in tenancy"
   statements     = local.federated_reader_group_tenancy_read_permissions_list
+  freeform_tags  = local.validated_tags
 }
 
