@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.4.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.3.1...v1.4.0) (2026-01-16)
+
+### Features
+
+* **AG-4408:** handle existing domains and tagging ([#26](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/26)) ([6f20ce3](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/6f20ce34f283fb0205e87d63011e992987a9a4b0))
+
 ## [1.3.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.3.0...v1.3.1) (2026-01-12)
 
 ### Bug Fixes
