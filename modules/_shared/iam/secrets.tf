@@ -20,7 +20,8 @@ resource "oci_kms_vault" "upwind_vault" {
   compartment_id = local.compartment_id
   display_name   = format("upwind-vault-%s", local.resource_suffix_hyphen)
   # Required for software-only keys
-  vault_type = "DEFAULT"
+  vault_type    = "DEFAULT"
+  freeform_tags = local.validated_tags
 }
 
 # Create the Vault Key for encryption when using a newly created vault
@@ -35,6 +36,7 @@ resource "oci_kms_key" "upwind_vault_key" {
   }
   # Required for software-only keys
   protection_mode = "SOFTWARE"
+  freeform_tags   = local.validated_tags
 }
 
 # Create the Vault Key for encryption when using an existing vault but no key provided
@@ -49,6 +51,7 @@ resource "oci_kms_key" "upwind_vault_key_existing_vault" {
   }
   # Required for software-only keys
   protection_mode = "SOFTWARE"
+  freeform_tags   = local.validated_tags
 }
 
 # Local values to determine which vault and key to use
@@ -68,7 +71,8 @@ resource "oci_vault_secret" "upwind_client_id" {
     content      = base64encode(var.upwind_client_id)
     content_type = "BASE64"
   }
-  description = "Upwind client ID for authentication"
+  description   = "Upwind client ID for authentication"
+  freeform_tags = local.validated_tags
 }
 
 resource "oci_vault_secret" "upwind_client_secret" {
@@ -80,7 +84,8 @@ resource "oci_vault_secret" "upwind_client_secret" {
     content      = base64encode(var.upwind_client_secret)
     content_type = "BASE64"
   }
-  description = "Upwind client secret for authentication"
+  description   = "Upwind client secret for authentication"
+  freeform_tags = local.validated_tags
 }
 
 resource "oci_vault_secret" "scanner_client_id" {
@@ -93,7 +98,8 @@ resource "oci_vault_secret" "scanner_client_id" {
     content      = base64encode(var.scanner_client_id)
     content_type = "BASE64"
   }
-  description = "Upwind scanner client ID for authentication"
+  description   = "Upwind scanner client ID for authentication"
+  freeform_tags = local.validated_tags
 }
 
 resource "oci_vault_secret" "scanner_client_secret" {
@@ -106,7 +112,8 @@ resource "oci_vault_secret" "scanner_client_secret" {
     content      = base64encode(var.scanner_client_secret)
     content_type = "BASE64"
   }
-  description = "Upwind scanner client secret for authentication"
+  description   = "Upwind scanner client secret for authentication"
+  freeform_tags = local.validated_tags
 }
 
 # Create an empty secret but apply the user-defined tags to the resource
@@ -119,5 +126,6 @@ resource "oci_vault_secret" "terraform_tags" {
     content      = base64encode("tags-stored-as-resource-metadata")
     content_type = "BASE64"
   }
-  description = "Default tags stored as resource metadata"
+  description   = "Default tags stored as resource metadata"
+  freeform_tags = local.validated_tags
 }

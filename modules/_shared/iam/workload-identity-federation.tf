@@ -2,9 +2,13 @@ locals {
   upwind_aws_account = var.is_dev ? "437279811180" : "627244208106"
   timestamp          = formatdate("YYYYMMDD-hhmm", timestamp())
 
+  # Automatically determine if we should create a domain based on oci_domain_id presence
+  # If oci_domain_id is provided, use existing domain; otherwise create a new one
+  should_create_domain = var.oci_domain_id == ""
+
   # Determine the identity domain name prefix for policy statements
   # If creating a domain, use its display_name; otherwise use the provided name
-  identity_domain_name_prefix = var.create_identity_domain ? (
+  identity_domain_name_prefix = local.should_create_domain ? (
     try(oci_identity_domain.upwind_identity_domain[0].display_name, "") != "" ?
     "'${oci_identity_domain.upwind_identity_domain[0].display_name}'/" :
     ""
@@ -22,18 +26,20 @@ locals {
 ### See: https://docs.oracle.com/en-us/iaas/Content/Identity/domains/overview.htm
 
 data "oci_identity_domain" "upwind_identity_domain" {
-  domain_id = var.create_identity_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.identity_domain_id) : var.identity_domain_id
+  # Use created domain ID if creating, otherwise use provided oci_domain_id
+  domain_id = local.should_create_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.oci_domain_id) : var.oci_domain_id
 }
 
 # Create Identity Domain for workload identity federation
 # NOTE: OCI Identity Domains cannot be deleted once in CREATED status.
 resource "oci_identity_domain" "upwind_identity_domain" {
-  count          = var.create_identity_domain ? 1 : 0
+  count          = local.should_create_domain ? 1 : 0
   compartment_id = var.root_level_compartment_id
   display_name   = var.identity_domain_display_name != "" ? var.identity_domain_display_name : format("upwind-identity-domain-%s", local.resource_suffix_hyphen)
   description    = var.identity_domain_description
   license_type   = var.identity_domain_license_type
   home_region    = var.oci_region
+  freeform_tags  = local.validated_tags
 
   lifecycle {
     precondition {
@@ -48,7 +54,7 @@ resource "oci_identity_domain" "upwind_identity_domain" {
 # Replicate Identity Domain to all subscribed regions (excluding home region)
 # NOTE: Replication can only be initiated when the domain is ACTIVE
 resource "oci_identity_domain_replication_to_region" "upwind_identity_domain_replication" {
-  for_each = var.create_identity_domain ? {
+  for_each = local.should_create_domain ? {
     for rs in data.oci_identity_region_subscriptions.tenancy_regions.region_subscriptions :
     rs.region_name => rs.region_name
     if rs.region_name != var.oci_region && !rs.is_home_region
@@ -77,6 +83,14 @@ resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
     value = "CustomWebAppTemplateId"
   }
 
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
+  }
+
   depends_on = [oci_identity_domain.upwind_identity_domain]
 }
 
@@ -98,6 +112,14 @@ resource "oci_identity_domains_user" "upwind_management_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
+
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
+  }
 
   depends_on = [
     oci_identity_user.upwind_management_user,
@@ -122,6 +144,14 @@ resource "oci_identity_domains_user" "upwind_ro_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
 
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
+  }
+
   depends_on = [
     oci_identity_user.upwind_ro_user,
     oci_identity_domain.upwind_identity_domain
@@ -145,6 +175,14 @@ resource "oci_identity_domains_user" "cloudscanner_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
+
+  dynamic "tags" {
+    for_each = local.validated_tags
+    content {
+      key   = tags.key
+      value = tags.value
+    }
+  }
 
   depends_on = [
     oci_identity_user.cloudscanner_user,

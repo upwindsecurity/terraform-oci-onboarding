@@ -23,8 +23,7 @@ module "tenant" {
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.oci_tenancy_id
-  create_identity_domain          = var.create_identity_domain
-  identity_domain_id              = var.identity_domain_id
+  oci_domain_id                   = var.oci_domain_id
   identity_domain_display_name    = var.identity_domain_display_name
   identity_domain_description     = var.identity_domain_description
   identity_domain_license_type    = var.identity_domain_license_type
@@ -63,8 +62,7 @@ module "compartment" {
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.upwind_orchestrator_compartment_id
-  create_identity_domain          = var.create_identity_domain
-  identity_domain_id              = var.identity_domain_id
+  oci_domain_id                   = var.oci_domain_id
   identity_domain_display_name    = var.identity_domain_display_name
   identity_domain_description     = var.identity_domain_description
   identity_domain_license_type    = var.identity_domain_license_type
