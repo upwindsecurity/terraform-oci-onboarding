@@ -155,7 +155,7 @@ variable "oci_domain_id" {
 variable "identity_domain_display_name" {
   description = "Display name for the identity domain when creating a new one."
   type        = string
-  default     = "Upwind Identity Domain"
+  default     = ""
 }
 
 variable "identity_domain_description" {
