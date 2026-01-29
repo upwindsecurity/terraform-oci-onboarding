@@ -62,11 +62,6 @@ output "cloudscanner_orchestrator_volume_permissions" {
   value       = local.cloudscanner_orchestrator_volume_permissions_list
 }
 
-output "cloudscanner_orchestrator_snapshot_delete_permissions" {
-  description = "CloudScanner dynamic group orchestrator compartment snapshot deletion permissions."
-  value       = local.cloudscanner_orchestrator_snapshot_delete_permissions_list
-}
-
 output "cloudscanner_orchestrator_volume_delete_permissions" {
   description = "CloudScanner dynamic group orchestrator compartment volume deletion permissions."
   value       = local.cloudscanner_orchestrator_volume_delete_permissions_list
