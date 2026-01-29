@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.4.2](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.1...v1.4.2) (2026-01-29)
+
+### Bug Fixes
+
+* **AG-4477:** add additional permissions for block volume backups in CS ([#30](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/30)) ([027200b](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/027200b602e7272c894ddbff9b8fd92787290758))
+
 ## [1.4.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.0...v1.4.1) (2026-01-20)
 
 ### Bug Fixes
