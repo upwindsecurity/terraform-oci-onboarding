@@ -18,16 +18,6 @@ resource "oci_identity_policy" "cs_dg_orchestrator_volume_policy" {
   freeform_tags  = local.validated_tags
 }
 
-# CloudScanner needs orchestrator compartment snapshot deletion with conditions
-resource "oci_identity_policy" "cs_dg_orchestrator_snapshot_delete_policy" {
-  count          = var.enable_cloudscanners ? 1 : 0
-  compartment_id = var.upwind_orchestrator_compartment_id
-  name           = format("cs-orchestrator-snapshot-delete-%s", local.resource_suffix_hyphen)
-  description    = "Allow cloudscanner dynamic group to delete snapshots in orchestrator compartment"
-  statements     = local.cloudscanner_orchestrator_snapshot_delete_permissions_list
-  freeform_tags  = local.validated_tags
-}
-
 # CloudScanner needs orchestrator compartment volume deletion with conditions
 resource "oci_identity_policy" "cs_dg_orchestrator_volume_delete_policy" {
   count          = var.enable_cloudscanners ? 1 : 0

@@ -15,7 +15,8 @@ locals {
 
   # Tenancy-wide snapshot creation permissions
   cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-backups in tenancy"
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage boot-volume-backups in tenancy",
   ] : []
 
   # Orchestrator compartment volume management permissions
@@ -25,11 +26,6 @@ locals {
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instances in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}"
-  ] : []
-
-  # Orchestrator compartment snapshot deletion with conditions
-  cloudscanner_orchestrator_snapshot_delete_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-backups in compartment id ${var.upwind_orchestrator_compartment_id}"
   ] : []
 
   # Orchestrator compartment volume deletion with conditions
