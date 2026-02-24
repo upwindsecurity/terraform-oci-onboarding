@@ -16,6 +16,7 @@ locals {
     var.identity_domain_name != "" ? "'${var.identity_domain_name}'/" : ""
   )
 
+  # Set public key endpoint based on dev or prod
   public_key_endpoint = var.is_dev ? "https://get.upwind.dev" : "https://get.upwind.io"
 }
 
