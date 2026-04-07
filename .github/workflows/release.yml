@@ -36,7 +36,7 @@ jobs:
       is_manual: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -77,7 +77,7 @@ jobs:
     - name: Semantic Release
       id: semantic-release
       if: github.event_name == 'push'
-      uses: cycjimmy/semantic-release-action@v4
+      uses: cycjimmy/semantic-release-action@v6
       with:
         semantic_version: 24.2.5
         # Only install plugins that are not built-in to semantic-release
