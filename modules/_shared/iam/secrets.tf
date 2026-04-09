@@ -22,6 +22,7 @@ resource "oci_kms_vault" "upwind_vault" {
   # Required for software-only keys
   vault_type    = "DEFAULT"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }
 
 # Create the Vault Key for encryption when using a newly created vault
@@ -37,6 +38,7 @@ resource "oci_kms_key" "upwind_vault_key" {
   # Required for software-only keys
   protection_mode = "SOFTWARE"
   freeform_tags   = local.validated_tags
+  defined_tags    = local.validated_defined_tags
 }
 
 # Create the Vault Key for encryption when using an existing vault but no key provided
@@ -52,6 +54,7 @@ resource "oci_kms_key" "upwind_vault_key_existing_vault" {
   # Required for software-only keys
   protection_mode = "SOFTWARE"
   freeform_tags   = local.validated_tags
+  defined_tags    = local.validated_defined_tags
 }
 
 # Local values to determine which vault and key to use
@@ -73,6 +76,7 @@ resource "oci_vault_secret" "upwind_client_id" {
   }
   description   = "Upwind client ID for authentication"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }
 
 resource "oci_vault_secret" "upwind_client_secret" {
@@ -86,6 +90,7 @@ resource "oci_vault_secret" "upwind_client_secret" {
   }
   description   = "Upwind client secret for authentication"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }
 
 resource "oci_vault_secret" "scanner_client_id" {
@@ -100,6 +105,7 @@ resource "oci_vault_secret" "scanner_client_id" {
   }
   description   = "Upwind scanner client ID for authentication"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }
 
 resource "oci_vault_secret" "scanner_client_secret" {
@@ -114,6 +120,7 @@ resource "oci_vault_secret" "scanner_client_secret" {
   }
   description   = "Upwind scanner client secret for authentication"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }
 
 # Create an empty secret but apply the user-defined tags to the resource
@@ -128,4 +135,5 @@ resource "oci_vault_secret" "terraform_tags" {
   }
   description   = "Default tags stored as resource metadata"
   freeform_tags = local.validated_tags
+  defined_tags  = local.validated_defined_tags
 }

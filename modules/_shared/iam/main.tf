@@ -22,6 +22,14 @@ locals {
     for k, v in local.merged_tags : k => v
     if can(regex("^[a-zA-Z0-9_.-]{1,100}$", k)) && can(regex("^[a-zA-Z0-9_.-]{0,100}$", v))
   }
+
+  # Defined tags validation (namespace-qualified, e.g., "mandatory_tags.Environment")
+  # Keys must be in format "namespace.key" where both parts are 1-100 characters
+  # Values must be 0-256 characters (OCI defined tag value limit)
+  validated_defined_tags = {
+    for k, v in var.defined_tags : k => v
+    if can(regex("^[a-zA-Z0-9_.-]{1,100}\\.[a-zA-Z0-9_.-]{1,100}$", k)) && length(v) <= 256
+  }
 }
 
 # Get all subscribed regions for the tenancy
