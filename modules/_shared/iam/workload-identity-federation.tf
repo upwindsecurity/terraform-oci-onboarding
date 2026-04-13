@@ -40,6 +40,7 @@ resource "oci_identity_domain" "upwind_identity_domain" {
   license_type   = var.identity_domain_license_type
   home_region    = var.oci_region
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 
   lifecycle {
     precondition {

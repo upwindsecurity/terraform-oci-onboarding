@@ -217,3 +217,9 @@ variable "default_tags" {
     component  = "upwind"
   }
 }
+
+variable "defined_tags" {
+  description = "A map of defined tags (namespace-qualified) to apply to all resources. Example: {\"mandatory_tags.Environment\" = \"prod\"}"
+  type        = map(string)
+  default     = {}
+}

@@ -16,6 +16,7 @@ resource "oci_identity_policy" "cs_dg_orchestrator_volume_policy" {
   description    = "Allow cloudscanner dynamic group to manage volumes in orchestrator compartment"
   statements     = local.cloudscanner_orchestrator_volume_permissions_list
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 
 # CloudScanner needs orchestrator compartment volume deletion with conditions
@@ -26,5 +27,6 @@ resource "oci_identity_policy" "cs_dg_orchestrator_volume_delete_policy" {
   description    = "Allow cloudscanner dynamic group to delete volumes in orchestrator compartment"
   statements     = local.cloudscanner_orchestrator_volume_delete_permissions_list
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 

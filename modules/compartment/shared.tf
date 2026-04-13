@@ -16,6 +16,7 @@ module "iam" {
   enable_cloudscanners   = var.enable_cloudscanners
   tags                   = var.tags
   default_tags           = var.default_tags
+  defined_tags           = var.defined_tags
   upwind_region          = var.upwind_region
   is_dev                 = var.is_dev
 

@@ -13,6 +13,7 @@ resource "oci_identity_policy" "cs_dg_secret_access_policy" {
   description    = "Allow cloudscanner dynamic group to access secrets"
   statements     = module.iam.cloudscanner_secret_access_permissions
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 
 # CloudScanner functions permissions
@@ -23,6 +24,7 @@ resource "oci_identity_policy" "cs_dg_functions_policy" {
   description    = "Allow cloudscanner dynamic group to manage functions"
   statements     = module.iam.cloudscanner_functions_permissions
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 
 # CloudScanner object storage permissions
@@ -33,6 +35,7 @@ resource "oci_identity_policy" "cs_dg_object_storage_policy" {
   description    = "Allow cloudscanner dynamic group to access object storage"
   statements     = module.iam.cloudscanner_object_storage_permissions
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 
 # CloudScanner networking permissions for scaling
@@ -43,6 +46,7 @@ resource "oci_identity_policy" "cs_dg_networking_policy" {
   description    = "Allow cloudscanner dynamic group to manage networking for scaling"
   statements     = module.iam.cloudscanner_networking_permissions
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 }
 
 ### Target Compartment Policies (created in each target compartment)
@@ -55,6 +59,7 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   name           = format("cs-compute-viewer-%s", local.resource_suffix_hyphen)
   description    = "Allow cloudscanner dynamic group to view compute resources"
   freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
   statements = [
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read boot-volumes in compartment id ${each.value}",
