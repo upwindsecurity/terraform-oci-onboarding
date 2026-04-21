@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.6.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.5.0...v1.6.0) (2026-04-21)
+
+### Features
+
+* **AG-8612:** add defined_tags support for Identity Domains (SCIM) resources ([#40](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/40)) ([fef7228](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/fef72286c872f186d935edce5c59e3da6d1156d3))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
