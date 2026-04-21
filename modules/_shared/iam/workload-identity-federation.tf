@@ -84,11 +84,22 @@ resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
     value = "CustomWebAppTemplateId"
   }
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
@@ -114,11 +125,22 @@ resource "oci_identity_domains_user" "upwind_management_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
@@ -145,11 +167,22 @@ resource "oci_identity_domains_user" "upwind_ro_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
@@ -177,11 +210,22 @@ resource "oci_identity_domains_user" "cloudscanner_user" {
     "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
   ]
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
