@@ -17,11 +17,22 @@ resource "oci_identity_domains_group" "upwind_federated_mgmt_group" {
     value = oci_identity_domains_user.upwind_management_user.id
   }
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
@@ -44,11 +55,22 @@ resource "oci_identity_domains_group" "upwind_federated_reader_group" {
     value = oci_identity_domains_user.upwind_ro_user.id
   }
 
-  dynamic "tags" {
-    for_each = local.validated_tags
-    content {
-      key   = tags.key
-      value = tags.value
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
     }
   }
 
