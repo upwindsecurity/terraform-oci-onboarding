@@ -15,6 +15,11 @@ variable "upwind_client_id" {
   type        = string
 
   validation {
+    condition     = var.upwind_client_id != null && var.upwind_client_id != ""
+    error_message = "upwind_client_id cannot be null or empty."
+  }
+
+  validation {
     condition     = can(regex("^[a-zA-Z0-9]{1,}", var.upwind_client_id))
     error_message = "The Upwind client ID must be alphanumeric."
   }
@@ -24,6 +29,11 @@ variable "upwind_client_secret" {
   description = "The client secret for authentication with the Upwind Authorization Service."
   type        = string
   sensitive   = true
+
+  validation {
+    condition     = var.upwind_client_secret != null && var.upwind_client_secret != ""
+    error_message = "upwind_client_secret cannot be null or empty."
+  }
 }
 
 variable "scanner_client_id" {
