@@ -76,7 +76,7 @@ variable "upwind_region" {
   default     = "us"
 
   validation {
-    condition     = var.upwind_region == "us" || var.upwind_region == "eu" || var.upwind_region == "me" || var.upwind_region == "pdc01"
+    condition     = var.upwind_region == "us" || var.upwind_region == "ap" || var.upwind_region == "eu" || var.upwind_region == "me" || var.upwind_region == "pdc01"
     error_message = "The Upwind region must be one of: us, eu, me, pdc01."
   }
 }
