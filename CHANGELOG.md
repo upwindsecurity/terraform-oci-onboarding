@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.8.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.8.2...v1.8.3) (2026-06-24)
+
+### Bug Fixes
+
+* **UP-2420:** adding the ap region ([#50](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/50)) ([de03685](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/de03685fa1dc7c72fcf4ca82e07145ea6ee31538))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
