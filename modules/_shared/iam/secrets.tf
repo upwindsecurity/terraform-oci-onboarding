@@ -23,6 +23,10 @@ resource "oci_kms_vault" "upwind_vault" {
   vault_type    = "DEFAULT"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  timeouts {
+    create = var.create_timeout
+  }
 }
 
 # Create the Vault Key for encryption when using a newly created vault
@@ -39,6 +43,10 @@ resource "oci_kms_key" "upwind_vault_key" {
   protection_mode = "SOFTWARE"
   freeform_tags   = local.validated_tags
   defined_tags    = local.validated_defined_tags
+
+  timeouts {
+    create = var.create_timeout
+  }
 }
 
 # Create the Vault Key for encryption when using an existing vault but no key provided
@@ -55,6 +63,10 @@ resource "oci_kms_key" "upwind_vault_key_existing_vault" {
   protection_mode = "SOFTWARE"
   freeform_tags   = local.validated_tags
   defined_tags    = local.validated_defined_tags
+
+  timeouts {
+    create = var.create_timeout
+  }
 }
 
 # Local values to determine which vault and key to use

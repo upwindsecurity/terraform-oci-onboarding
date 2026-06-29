@@ -22,6 +22,9 @@ module "tenant" {
   upwind_orchestrator_compartment = var.upwind_orchestrator_compartment
   enable_dspm_scanning            = var.enable_dspm_scanning
 
+  # Timeouts
+  create_timeout = var.create_timeout
+
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.oci_tenancy_id
   oci_domain_id                   = var.oci_domain_id
@@ -61,6 +64,9 @@ module "compartment" {
   upwind_orchestrator_compartment_id = var.upwind_orchestrator_compartment_id
   target_compartment_ids             = var.target_compartment_ids
   enable_dspm_scanning               = var.enable_dspm_scanning
+
+  # Timeouts
+  create_timeout = var.create_timeout
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.upwind_orchestrator_compartment_id

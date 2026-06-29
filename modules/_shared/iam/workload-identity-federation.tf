@@ -42,6 +42,10 @@ resource "oci_identity_domain" "upwind_identity_domain" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
 
+  timeouts {
+    create = var.create_timeout
+  }
+
   lifecycle {
     precondition {
       condition     = var.identity_domain_display_name != "" || local.resource_suffix_hyphen != ""
@@ -63,6 +67,10 @@ resource "oci_identity_domain_replication_to_region" "upwind_identity_domain_rep
 
   domain_id      = oci_identity_domain.upwind_identity_domain[0].id
   replica_region = each.value
+
+  timeouts {
+    create = var.create_timeout
+  }
 
   depends_on = [
     oci_identity_domain.upwind_identity_domain

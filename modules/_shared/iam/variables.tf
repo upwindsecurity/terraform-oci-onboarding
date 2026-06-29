@@ -143,6 +143,21 @@ variable "aws_federated_group_name" {
 
 # endregion workload identity federation
 
+# region timeouts
+
+variable "create_timeout" {
+  description = "Maximum timeout for create operations on slow-provisioning resources (identity domain, domain replication, KMS vault, and KMS keys). Specified as a Terraform duration string (e.g., \"30m\", \"1h\", \"90s\")."
+  type        = string
+  default     = "30m"
+
+  validation {
+    condition     = var.create_timeout != "" && can(regex("^([0-9]+h)?([0-9]+m)?([0-9]+s)?$", var.create_timeout))
+    error_message = "The create_timeout must be a valid Terraform duration string (e.g., \"30m\", \"1h\", \"90s\", \"1h30m\")."
+  }
+}
+
+# endregion timeouts
+
 # region upwind
 
 variable "upwind_organization_id" {
