@@ -66,3 +66,26 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read block-volumes in compartment id ${each.value}"
   ]
 }
+
+# Grant snapshot (volume backup) management to CloudScanner dynamic group on each
+# target compartment. Required for CreateVolumeBackup / CreateBootVolumeBackup.
+#
+# Without this, a compartment-scoped deployment can discover volumes (read-only
+# viewer policy above) but every snapshot request is denied with
+# NotAuthorizedOrNotFound, leaving scans stuck at SNAPSHOT_REQUESTED. The tenant
+# module grants these tenancy-wide via cs-tenancy-snapshot-create (see
+# modules/tenant/iam-roles-cloudscanner.tf); this is the compartment-scoped
+# equivalent, applied to the compartment that holds the target volumes.
+resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
+  for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
+
+  compartment_id = each.value
+  name           = format("cs-snapshot-create-%s", local.resource_suffix_hyphen)
+  description    = "Allow cloudscanner dynamic group to create volume snapshots (backups)"
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+  statements = [
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage boot-volume-backups in compartment id ${each.value}"
+  ]
+}
