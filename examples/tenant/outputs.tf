@@ -9,6 +9,17 @@ output "identity_domain_oidc_issuer_url" {
   value       = module.upwind_tenant_onboarding.identity_domain_oidc_issuer_url
 }
 
+output "confidential_app_client_id" {
+  description = "The client ID of the confidential OAuth client app for workload identity federation"
+  value       = module.upwind_tenant_onboarding.confidential_app_client_id
+}
+
+output "confidential_app_client_secret" {
+  description = "The client secret of the confidential OAuth client app for workload identity federation"
+  value       = module.upwind_tenant_onboarding.confidential_app_client_secret
+  sensitive   = true
+}
+
 output "identity_domain_federation_info" {
   description = "Information needed to configure AWS IAM OIDC provider for OCI federation"
   value       = module.upwind_tenant_onboarding.identity_domain_federation_info
