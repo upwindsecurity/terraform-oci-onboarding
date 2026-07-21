@@ -61,6 +61,11 @@ output "cs_dg_networking_policy" {
   value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_networking_policy[0] : null
 }
 
+output "cs_dg_kms_policy" {
+  description = "CloudScanner dynamic group KMS policy."
+  value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_kms_policy[0] : null
+}
+
 ### CloudScanner Target Compartment Policies
 
 output "upwind_cloudscanner_dg_compute_viewer_policies" {

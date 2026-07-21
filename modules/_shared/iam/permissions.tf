@@ -26,6 +26,13 @@ locals {
     "Allow service blockstorage to use keys in tenancy",
   ] : []
 
+  # Compartment-scoped KMS permissions for single-account encrypted volume restore
+  cloudscanner_compartment_kms_permissions_list = var.enable_cloudscanners ? [
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use key-delegate in compartment id ${var.upwind_orchestrator_compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use keys in compartment id ${var.upwind_orchestrator_compartment_id}",
+    "Allow service blockstorage to use keys in compartment id ${var.upwind_orchestrator_compartment_id}",
+  ] : []
+
   # Orchestrator compartment volume management permissions
   cloudscanner_orchestrator_volume_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read block-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",

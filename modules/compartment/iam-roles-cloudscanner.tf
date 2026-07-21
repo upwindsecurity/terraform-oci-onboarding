@@ -49,6 +49,17 @@ resource "oci_identity_policy" "cs_dg_networking_policy" {
   defined_tags   = local.validated_defined_tags
 }
 
+# CloudScanner KMS permissions for encrypted volume restore
+resource "oci_identity_policy" "cs_dg_kms_policy" {
+  count          = var.enable_cloudscanners ? 1 : 0
+  compartment_id = local.compartment_id
+  name           = format("cs-kms-%s", local.resource_suffix_hyphen)
+  description    = "Allow cloudscanner dynamic group to delegate and use KMS keys in orchestrator compartment"
+  statements     = module.iam.cloudscanner_compartment_kms_permissions
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+}
+
 ### Target Compartment Policies (created in each target compartment)
 
 # Grant compute viewer policy to CloudScanner dynamic group on each target compartment
