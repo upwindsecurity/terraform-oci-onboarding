@@ -19,6 +19,13 @@ locals {
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage boot-volume-backups in tenancy",
   ] : []
 
+  # Cloudscanner kms permissions for encrypted volumes
+  cloudscanner_tenancy_kms_permissions_list = var.enable_cloudscanners ? [
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use key-delegate in tenancy",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use keys in tenancy",
+    "Allow service blockstorage to use keys in tenancy",
+  ] : []
+
   # Orchestrator compartment volume management permissions
   cloudscanner_orchestrator_volume_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read block-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
