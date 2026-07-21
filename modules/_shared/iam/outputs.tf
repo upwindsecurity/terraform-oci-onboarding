@@ -57,6 +57,16 @@ output "cloudscanner_tenancy_snapshot_create_permissions" {
   value       = local.cloudscanner_tenancy_snapshot_create_permissions_list
 }
 
+output "cloudscanner_tenancy_kms_permissions" {
+  description = "Cloudscanner dynamic group tenant-wide KMS permissions"
+  value       = local.cloudscanner_tenancy_kms_permissions_list
+}
+
+output "cloudscanner_compartment_kms_permissions" {
+  description = "CloudScanner dynamic group compartment-wide KMS permissions."
+  value       = local.cloudscanner_compartment_kms_permissions_list
+}
+
 output "cloudscanner_orchestrator_volume_permissions" {
   description = "CloudScanner dynamic group orchestrator compartment volume permissions."
   value       = local.cloudscanner_orchestrator_volume_permissions_list

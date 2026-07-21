@@ -26,6 +26,16 @@ resource "oci_identity_policy" "cs_dg_tenancy_snapshot_create_policy" {
   defined_tags   = local.validated_defined_tags
 }
 
+# Cloudscanner needs tenancy-wide kms access for encrypted volumes
+resource "oci_identity_policy" "cs_dg_tenancy_kms_policy" {
+  count          = var.enable_cloudscanners ? 1 : 0
+  compartment_id = var.oci_tenancy_id
+  name           = format("cs-tenancy-kms-%s", local.resource_suffix_hyphen)
+  description    = "Allow cloudscanner dynamic group to delegate and use KMS keys in tenancy"
+  statements     = module.iam.cloudscanner_tenancy_kms_permissions
+  freeform_tags  = local.validated_tags
+}
+
 ### Tenancy-Level Policies for CloudScanner Dynamic Group (continued)
 ###
 ### NOTE: Orchestrator compartment-level policies (volume, snapshot deletion) are now
