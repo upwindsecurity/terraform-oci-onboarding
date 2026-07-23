@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.9.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.9.0...v1.9.1) (2026-07-23)
+
+### Bug Fixes
+
+* **UP-3267:** grant snapshot-create IAM on target compartments for compartment-scoped OCI onboarding ([#54](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/54)) ([2214b93](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/2214b93d2b999d9a6a4119965abcb35116cd636a))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
