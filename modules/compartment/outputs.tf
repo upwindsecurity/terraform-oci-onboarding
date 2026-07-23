@@ -9,56 +9,100 @@ output "iam_module" {
 
 output "mgmt_group_orchestrator_deploy_compute" {
   description = "Management group orchestrator compartment compute deployment policy."
-  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute
+  value = {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.statements
+  }
 }
 
 output "mgmt_group_orchestrator_deploy_network" {
   description = "Management group orchestrator compartment network deployment policy."
-  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_network
+  value = {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_network.id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_network.name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_network.statements
+  }
 }
 
 output "mgmt_group_orchestrator_deploy_functions" {
   description = "Management group orchestrator compartment functions deployment policy."
-  value       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions
+  value = {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.statements
+  }
 }
 
 output "mgmt_group_secret_access_policy" {
   description = "Management group secret access policy."
-  value       = oci_identity_policy.mgmt_group_secret_access_policy
+  value = {
+    id         = oci_identity_policy.mgmt_group_secret_access_policy.id
+    name       = oci_identity_policy.mgmt_group_secret_access_policy.name
+    statements = oci_identity_policy.mgmt_group_secret_access_policy.statements
+  }
 }
 
 ### Target Compartment Policies
 
 output "upwind_management_group_compartment_viewer_policies" {
   description = "The compartment viewer policies for the management group (one per target compartment)."
-  value       = oci_identity_policy.upwind_management_group_compartment_viewer_policy
+  value = {
+    for k, v in oci_identity_policy.upwind_management_group_compartment_viewer_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  }
 }
 
 output "upwind_management_group_asset_viewer_policies" {
   description = "The asset viewer policies for the management group (one per target compartment)."
-  value       = oci_identity_policy.upwind_management_group_asset_viewer_policy
+  value = {
+    for k, v in oci_identity_policy.upwind_management_group_asset_viewer_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  }
 }
 
 ### CloudScanner Orchestrator Compartment Policies
 
 output "cs_dg_secret_access_policy" {
   description = "CloudScanner dynamic group secret access policy."
-  value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_secret_access_policy[0] : null
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.cs_dg_secret_access_policy[0].id
+    name       = oci_identity_policy.cs_dg_secret_access_policy[0].name
+    statements = oci_identity_policy.cs_dg_secret_access_policy[0].statements
+  } : null
 }
 
 output "cs_dg_functions_policy" {
   description = "CloudScanner dynamic group functions policy."
-  value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_functions_policy[0] : null
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.cs_dg_functions_policy[0].id
+    name       = oci_identity_policy.cs_dg_functions_policy[0].name
+    statements = oci_identity_policy.cs_dg_functions_policy[0].statements
+  } : null
 }
 
 output "cs_dg_object_storage_policy" {
   description = "CloudScanner dynamic group object storage policy."
-  value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_object_storage_policy[0] : null
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.cs_dg_object_storage_policy[0].id
+    name       = oci_identity_policy.cs_dg_object_storage_policy[0].name
+    statements = oci_identity_policy.cs_dg_object_storage_policy[0].statements
+  } : null
 }
 
 output "cs_dg_networking_policy" {
   description = "CloudScanner dynamic group networking policy."
-  value       = var.enable_cloudscanners ? oci_identity_policy.cs_dg_networking_policy[0] : null
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.cs_dg_networking_policy[0].id
+    name       = oci_identity_policy.cs_dg_networking_policy[0].name
+    statements = oci_identity_policy.cs_dg_networking_policy[0].statements
+  } : null
 }
 
 output "cs_dg_kms_policy" {
@@ -70,7 +114,13 @@ output "cs_dg_kms_policy" {
 
 output "upwind_cloudscanner_dg_compute_viewer_policies" {
   description = "The compute viewer policies for CloudScanner dynamic group (one per target compartment)."
-  value       = var.enable_cloudscanners ? oci_identity_policy.upwind_cloudscanner_dg_compute_viewer_policy : {}
+  value = var.enable_cloudscanners ? {
+    for k, v in oci_identity_policy.upwind_cloudscanner_dg_compute_viewer_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  } : {}
 }
 
 ### Workload Identity Federation
