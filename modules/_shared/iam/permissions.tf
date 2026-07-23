@@ -17,6 +17,11 @@ locals {
   cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage boot-volume-backups in tenancy",
+    # Required to create snapshots in tenancies that apply defined-tag defaults
+    # (e.g. Oracle-Tags.CreatedBy) to new resources: without permission to use
+    # the tag namespace, OCI rejects the backup with "Invalid tags". Tag
+    # namespaces live in the root compartment, so this must be tenancy-scoped.
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use tag-namespaces in tenancy",
   ] : []
 
   # Cloudscanner kms permissions for encrypted volumes

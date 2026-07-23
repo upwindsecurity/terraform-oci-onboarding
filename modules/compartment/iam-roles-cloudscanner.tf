@@ -4,6 +4,14 @@
 ### for users with only compartment-level permissions.
 ###
 ### NOTE: Volume and snapshot deletion policies are in modules/_shared/iam/roles.tf
+###
+### NOTE: If the tenancy applies defined-tag defaults (e.g. Oracle-Tags.CreatedBy)
+### to new resources, the CloudScanner dynamic group also needs
+### "use tag-namespaces in tenancy" or snapshot creation fails with
+### "Invalid tags". Tag namespaces live in the root compartment, so that grant
+### cannot be created from a compartment-scoped deployment — a tenancy admin
+### must add it separately. The tenant module grants it via
+### cs-tenancy-snapshot-create (modules/_shared/iam/permissions.tf).
 
 # CloudScanner secret access
 resource "oci_identity_policy" "cs_dg_secret_access_policy" {
