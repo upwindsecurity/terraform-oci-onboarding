@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.9.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.8.4...v1.9.0) (2026-07-21)
+
+### Features
+
+* **UP-3706:** add policy for kms key usage for encrypted volumes ([#55](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/55)) ([3875e36](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/3875e3630a3c5a58a3fb1cf18c1db55812b63d9d))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
