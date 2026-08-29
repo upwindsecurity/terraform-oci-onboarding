@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.8.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.8.0...v1.8.1) (2026-05-12)
+
+### Bug Fixes
+
+* **AG-8744:** added block execution validation for id and secret fields ([#46](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/46)) ([4618c88](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/4618c88f93bca3a13be5db6c56371055e27ddc07)), closes [#44](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/44)
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
