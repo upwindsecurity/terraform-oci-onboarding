@@ -13,6 +13,14 @@
 ### must add it separately. The tenant module grants it via
 ### cs-tenancy-snapshot-create (modules/_shared/iam/permissions.tf).
 
+### NOTE: Pulling images from OCIR needs "read repos in tenancy" so the scanner's
+### instance principal can mint a registry token (UP-6615). Repositories live in
+### whichever compartment created them and the images to scan may span several, so
+### a compartment-scoped grant would not reliably cover them — a tenancy admin must
+### add it separately. The tenant module grants it via cs-registry-read
+### (modules/_shared/iam/permissions.tf). Without it the scanner falls back to the
+### static DOCKER_USER/DOCKER_PASSWORD credentials.
+
 # CloudScanner secret access
 resource "oci_identity_policy" "cs_dg_secret_access_policy" {
   count          = var.enable_cloudscanners ? 1 : 0
