@@ -52,6 +52,11 @@ output "cloudscanner_tenancy_compute_read_permissions" {
   value       = local.cloudscanner_tenancy_compute_read_permissions_list
 }
 
+output "cloudscanner_tenancy_registry_read_permissions" {
+  description = "CloudScanner dynamic group tenancy-wide container registry read permissions."
+  value       = local.cloudscanner_tenancy_registry_read_permissions_list
+}
+
 output "cloudscanner_tenancy_snapshot_create_permissions" {
   description = "CloudScanner dynamic group tenancy-wide snapshot creation permissions."
   value       = local.cloudscanner_tenancy_snapshot_create_permissions_list

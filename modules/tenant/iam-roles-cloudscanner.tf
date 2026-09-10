@@ -15,6 +15,17 @@ resource "oci_identity_policy" "cs_dg_tenancy_compute_read_policy" {
   defined_tags   = local.validated_defined_tags
 }
 
+# CloudScanner needs tenancy-wide registry read to pull the images it scans
+resource "oci_identity_policy" "cs_dg_tenancy_registry_read_policy" {
+  count          = var.enable_cloudscanners ? 1 : 0
+  compartment_id = var.oci_tenancy_id
+  name           = format("cs-registry-read-%s", local.resource_suffix_hyphen)
+  description    = "Allow cloudscanner dynamic group to read container registry repositories in tenancy"
+  statements     = module.iam.cloudscanner_tenancy_registry_read_permissions
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+}
+
 # CloudScanner needs tenancy-wide snapshot management
 resource "oci_identity_policy" "cs_dg_tenancy_snapshot_create_policy" {
   count          = var.enable_cloudscanners ? 1 : 0

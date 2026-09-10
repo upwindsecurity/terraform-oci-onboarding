@@ -13,6 +13,20 @@ locals {
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read work-requests in tenancy"
   ] : []
 
+  # Tenancy-wide container registry read, for pulling images to scan (UP-6615).
+  # OCIR advertises a Docker v2 bearer challenge whose token realm accepts OCI
+  # request signing, so the scanner mints a short-lived registry token as its
+  # instance principal rather than carrying a static user/auth-token pair. This
+  # grant is what authorises that exchange; without it the mint is refused and the
+  # scanner falls back to DOCKER_USER/DOCKER_PASSWORD.
+  #
+  # Tenancy rather than compartment scope: OCIR repositories live in whichever
+  # compartment they were created in, and the images a scanner is asked to pull
+  # can be spread across several.
+  cloudscanner_tenancy_registry_read_permissions_list = var.enable_cloudscanners ? [
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read repos in tenancy"
+  ] : []
+
   # Tenancy-wide snapshot creation permissions
   cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy",

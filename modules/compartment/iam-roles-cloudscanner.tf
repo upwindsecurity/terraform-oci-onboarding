@@ -70,6 +70,31 @@ resource "oci_identity_policy" "cs_dg_kms_policy" {
 
 ### Target Compartment Policies (created in each target compartment)
 
+# Grant container registry read to the CloudScanner dynamic group on each target
+# compartment. Required so the scanner's instance principal can mint an OCIR
+# registry token and pull the images it scans (UP-6615).
+#
+# This covers repositories living in the compartments being onboarded, which is
+# the common case. Repositories are compartment-scoped resources, so images held
+# in a compartment that is NOT onboarded are not covered here - for those, a
+# tenancy admin grants "read repos in tenancy", which the tenant module does via
+# cs-registry-read (modules/tenant/iam-roles-cloudscanner.tf).
+#
+# Without a matching grant the token exchange is refused and the scanner falls
+# back to the static DOCKER_USER/DOCKER_PASSWORD credentials.
+resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
+  for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
+
+  compartment_id = each.value
+  name           = format("cs-registry-read-%s", local.resource_suffix_hyphen)
+  description    = "Allow cloudscanner dynamic group to read container registry repositories"
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+  statements = [
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read repos in compartment id ${each.value}"
+  ]
+}
+
 # Grant compute viewer policy to CloudScanner dynamic group on each target compartment
 resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
