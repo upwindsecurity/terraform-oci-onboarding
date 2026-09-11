@@ -224,8 +224,8 @@ variable "upwind_region" {
   default     = "us"
 
   validation {
-    condition     = var.upwind_region == "us" || var.upwind_region == "eu" || var.upwind_region == "ap" || var.upwind_region == "me" || var.upwind_region == "pdc01"
-    error_message = "The Upwind region must be one of: us, eu, ap, me, pdc01."
+    condition     = can(regex("^(us|eu|ap|me|au|pdc[0-9]{2})$", var.upwind_region))
+    error_message = "The Upwind region must be one of us, eu, ap, me, au, or a private region such as pdc01."
   }
 }
 
