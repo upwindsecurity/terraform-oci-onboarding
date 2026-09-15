@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.9.2](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.9.1...v1.9.2) (2026-08-13)
+
+### Bug Fixes
+
+* **UP-3265:** grant use tag-namespaces so OCI tag defaults don't block snapshots ([#58](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/58)) ([016ff41](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/016ff41c548490acdb26577601b8e6d90d99b2ef))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
