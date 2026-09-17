@@ -107,7 +107,8 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   statements = [
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read boot-volumes in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read block-volumes in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read block-volumes in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read cluster-node-pools in compartment id ${each.value}"
   ]
 }
 

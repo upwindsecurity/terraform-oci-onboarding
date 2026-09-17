@@ -10,7 +10,11 @@ locals {
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read block-volumes in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read instance-configurations in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read instance-pools in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read work-requests in tenancy"
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read work-requests in tenancy",
+    # Kubernetes node scanning resolves an OKE node pool to one of its nodes before it can scan
+    # anything. "read" rather than "inspect". inspect only covers ListNodePools, which finds
+    # the pool by name, but the nodes themselves only come back from GetNodePool, which needs read.
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read cluster-node-pools in tenancy"
   ] : []
 
   # Tenancy-wide container registry read, for pulling images to scan (UP-6615).
