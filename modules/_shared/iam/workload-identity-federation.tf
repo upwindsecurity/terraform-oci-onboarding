@@ -258,11 +258,15 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
 
   dynamic "impersonation_service_users" {
     for_each = {
-      for u in [
-        oci_identity_domains_user.upwind_management_user,
-        oci_identity_domains_user.upwind_ro_user,
-        var.enable_cloudscanners ? oci_identity_domains_user.cloudscanner_user[0] : null
-      ] :
+      # cloudscanner_user is count-based, so it is an empty list when
+      # enable_cloudscanners is false. Concatenating keeps null out of the list.
+      for u in concat(
+        [
+          oci_identity_domains_user.upwind_management_user,
+          oci_identity_domains_user.upwind_ro_user,
+        ],
+        oci_identity_domains_user.cloudscanner_user,
+      ) :
       u.user_name => u
     }
     content {
