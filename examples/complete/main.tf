@@ -1,59 +1,28 @@
-module "main_complete" {
+# Complete example: onboard selected OCI compartments to Upwind with the root module, CloudScanners and DSPM scanning
+module "upwind_onboarding" {
   source = "../.."
 
-  enabled     = true
-  name        = "complete-example"
-  environment = "production"
+  deployment_mode        = "compartment"
+  target_compartment_ids = var.target_compartment_ids
 
-  tags = {
-    Environment = "production"
-    Project     = "terraform-module-template"
-    Example     = "complete"
-    Owner       = "DevOps Team"
-    CostCenter  = "Engineering"
-    ManagedBy   = "Terraform"
-  }
-}
+  # Required Upwind configuration
+  upwind_organization_id = var.upwind_organization_id
+  upwind_client_id       = var.upwind_client_id
+  upwind_client_secret   = var.upwind_client_secret
+  upwind_region          = var.upwind_region
 
-# Example of conditional module usage
-module "main_optional" {
-  source = "../.."
+  # Required OCI configuration
+  oci_tenancy_id                     = var.oci_tenancy_id
+  oci_region                         = var.oci_region
+  upwind_orchestrator_compartment_id = var.upwind_orchestrator_compartment_id
 
-  enabled     = var.create_optional_resources
-  name        = "optional-example"
-  environment = "staging"
+  # CloudScanners
+  enable_cloudscanners  = true
+  scanner_client_id     = var.scanner_client_id
+  scanner_client_secret = var.scanner_client_secret
+  enable_dspm_scanning  = true
 
-  tags = {
-    Environment = "staging"
-    Project     = "terraform-module-template"
-    Example     = "complete"
-    Purpose     = "conditional-deployment"
-  }
-}
-
-# Example showing different environments
-module "main_dev" {
-  source = "../.."
-
-  enabled     = true
-  name        = "dev-example"
-  environment = "development"
-
-  tags = {
-    Environment = "development"
-    Project     = "terraform-module-template"
-    Example     = "complete"
-    Temporary   = "true"
-  }
-}
-
-# Example of additional resources that might be created alongside the main module
-resource "null_resource" "additional_setup" {
-  count = var.create_optional_resources ? 1 : 0
-
-  provisioner "local-exec" {
-    command = "echo 'Additional setup completed for complete example'"
-  }
-
-  depends_on = [module.main_complete]
+  # Naming and tags
+  resource_suffix = var.resource_suffix
+  tags            = var.tags
 }

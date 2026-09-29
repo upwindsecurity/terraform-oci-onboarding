@@ -1,32 +1,29 @@
-# Outputs from the main complete module
-output "main_resource_created" {
-  description = "Whether the main example resource was created"
-  value       = module.main_complete.resource_created
+output "deployment_mode" {
+  description = "The deployment mode used"
+  value       = module.upwind_onboarding.deployment_mode
 }
 
-output "main_name" {
-  description = "The name identifier used for main module"
-  value       = module.main_complete.name
+output "target_compartment_ids" {
+  description = "The compartments Upwind was granted access to"
+  value       = module.upwind_onboarding.target_compartment_ids
 }
 
-output "main_environment" {
-  description = "The environment name used for main module"
-  value       = module.main_complete.environment
+output "vault_id" {
+  description = "The OCID of the Vault holding the Upwind credentials"
+  value       = module.upwind_onboarding.vault_id
 }
 
-# Outputs from the optional module
-output "optional_resource_created" {
-  description = "Whether the optional example resource was created"
-  value       = module.main_optional.resource_created
+output "upwind_management_service_account_email" {
+  description = "Email of the management service account"
+  value       = module.upwind_onboarding.upwind_management_service_account_email
 }
 
-# Outputs from the dev module
-output "dev_resource_created" {
-  description = "Whether the dev example resource was created"
-  value       = module.main_dev.resource_created
+output "identity_domain_oidc_issuer_url" {
+  description = "OIDC issuer URL for the Identity Domain"
+  value       = module.upwind_onboarding.identity_domain_oidc_issuer_url
 }
 
-output "dev_name" {
-  description = "The name identifier used for dev module"
-  value       = module.main_dev.name
+output "configuration" {
+  description = "Module configuration details"
+  value       = module.upwind_onboarding.configuration
 }
