@@ -31,12 +31,14 @@ jobs:
     uses: ./.github/workflows/discover.yml
 
   terraform-checks:
-    name: Terraform Checks (${{ matrix.module }})
+    name: Terraform Checks (${{ matrix.module }}, ${{ matrix.terraform_version }})
     runs-on: ubuntu-latest
     needs: discover-modules-examples
     strategy:
       matrix:
         module: ${{ fromJson(needs.discover-modules-examples.outputs.modules) }}
+        # 1.9.0 is the required_version floor; keep it here so nothing newer slips in.
+        terraform_version: ["1.9.0", "1.11.0"]
 
     steps:
     - name: Checkout
@@ -45,7 +47,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: ${{ env.TERRAFORM_VERSION }}
+        terraform_version: ${{ matrix.terraform_version }}
 
     - name: Check Terraform Format
       run: |
