@@ -72,6 +72,28 @@ jobs:
       run: terraform validate
       working-directory: modules/${{ matrix.module }}
 
+  terraform-checks-root:
+    name: Terraform Checks (root, ${{ matrix.terraform_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        terraform_version: ["1.9.0", "1.11.0"]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ matrix.terraform_version }}
+
+    - name: Run Terraform Init
+      run: terraform init -backend=false
+
+    - name: Run Terraform Validate
+      run: terraform validate
+
   terraform-tflint:
     name: Terraform Lint (${{ matrix.module }})
     runs-on: ubuntu-latest
@@ -167,7 +189,7 @@ jobs:
         fi
 
   examples:
-    name: Test Examples (${{ matrix.example }})
+    name: Test Examples (${{ matrix.example }}, ${{ matrix.terraform_version }})
     runs-on: ubuntu-latest
     needs: discover-modules-examples
     if: |
@@ -177,6 +199,7 @@ jobs:
     strategy:
       matrix:
         example: ${{ fromJson(needs.discover-modules-examples.outputs.examples) }}
+        terraform_version: ["1.9.0", "1.11.0"]
 
     steps:
     - name: Checkout
@@ -185,7 +208,7 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: ${{ env.TERRAFORM_VERSION }}
+        terraform_version: ${{ matrix.terraform_version }}
 
     - name: Run Terraform Init
       run: terraform init
