@@ -157,10 +157,6 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute
   statements = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage auto-scaling-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage compute-capacity-reservations in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage compute-global-image-capability-schema in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage compute-image-capability-schema in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage dedicated-vm-hosts in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-family in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
