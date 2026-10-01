@@ -56,6 +56,17 @@ resource "oci_identity_domain" "upwind_identity_domain" {
   }
 }
 
+# onboarding-service replicates the domain after onboarding. Installs from earlier versions have
+# these replicas in state; the provider's delete for them is a no-op, but without this block their
+# plan would show every replica as destroyed. They are dropped from state instead and stay in OCI.
+removed {
+  from = oci_identity_domain_replication_to_region.upwind_identity_domain_replication
+
+  lifecycle {
+    destroy = false
+  }
+}
+
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
   idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
   display_name  = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"

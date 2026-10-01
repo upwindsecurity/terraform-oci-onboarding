@@ -1,7 +1,9 @@
 # The domain replication grant is "manage domains", which is only safe because of its conditions:
 # target.domain.id limits it to the Upwind identity domain and request.permission limits it to
 # replication. These tests pin the exact statements so a change that drops or loosens either
-# condition fails CI, and check the policy's precondition refuses a statement it cannot scope.
+# condition fails CI, check the policy is attached where the domain lives (a policy only reaches
+# resources in its own compartment and below), check no grant exists for a customer-supplied
+# domain, and check the policy's precondition refuses a statement it cannot scope.
 
 mock_provider "oci" {
   mock_data "oci_identity_domain" {
@@ -28,16 +30,21 @@ run "tenant_mode_grants_only_replication_of_the_upwind_domain" {
   }
 
   assert {
-    condition     = length(oci_identity_policy.federated_mgmt_group_domain_replication_policy.statements) == 1
+    condition     = length(oci_identity_policy.federated_mgmt_group_domain_replication_policy[0].statements) == 1
     error_message = "Tenant mode reads domains through \"read all-resources in tenancy\", so the policy should hold only the replication statement."
   }
 
   assert {
     condition = (
-      oci_identity_policy.federated_mgmt_group_domain_replication_policy.statements[0] ==
+      oci_identity_policy.federated_mgmt_group_domain_replication_policy[0].statements[0] ==
       "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage domains in tenancy where all { target.domain.id = 'ocid1.domain.oc1..upwindtest', request.permission = 'DOMAIN_REPLICATE' }"
     )
     error_message = "The tenant-mode replication statement changed. It must stay limited to the Upwind domain and to DOMAIN_REPLICATE."
+  }
+
+  assert {
+    condition     = oci_identity_policy.federated_mgmt_group_domain_replication_policy[0].compartment_id == oci_identity_domain.upwind_identity_domain[0].compartment_id
+    error_message = "The replication policy must be attached to the compartment the Upwind identity domain is created in."
   }
 }
 
@@ -48,13 +55,38 @@ run "compartment_mode_scopes_the_grant_to_the_domain_compartment" {
 
   assert {
     condition = (
-      oci_identity_policy.federated_mgmt_group_domain_replication_policy.statements ==
+      oci_identity_policy.federated_mgmt_group_domain_replication_policy[0].statements ==
       tolist([
-        "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read domains in compartment id ocid1.compartment.oc1..domaincompartment",
+        "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to inspect domains in compartment id ocid1.compartment.oc1..domaincompartment",
         "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage domains in compartment id ocid1.compartment.oc1..domaincompartment where all { target.domain.id = 'ocid1.domain.oc1..upwindtest', request.permission = 'DOMAIN_REPLICATE' }",
       ])
     )
     error_message = "The compartment-mode replication statements changed. The manage statement must stay limited to the Upwind domain and to DOMAIN_REPLICATE."
+  }
+
+  assert {
+    condition = (
+      oci_identity_domain.upwind_identity_domain[0].compartment_id == "ocid1.compartment.oc1..domaincompartment" &&
+      oci_identity_policy.federated_mgmt_group_domain_replication_policy[0].compartment_id == "ocid1.compartment.oc1..domaincompartment"
+    )
+    error_message = "In compartment mode the domain and its replication policy must both live in root_level_compartment_id, or the policy does not reach the domain."
+  }
+}
+
+run "no_grant_for_a_customer_supplied_domain" {
+  variables {
+    root_level_compartment_id = "ocid1.compartment.oc1..domaincompartment"
+    oci_domain_id             = "ocid1.domain.oc1..customerdomain"
+  }
+
+  assert {
+    condition     = length(oci_identity_policy.federated_mgmt_group_domain_replication_policy) == 0
+    error_message = "A customer-supplied domain is the customer's to replicate, and may live outside root_level_compartment_id, so the module must not grant replication of it."
+  }
+
+  assert {
+    condition     = length(oci_identity_domain.upwind_identity_domain) == 0
+    error_message = "With oci_domain_id set the module must not create a domain."
   }
 }
 
