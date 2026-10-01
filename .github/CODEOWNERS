@@ -1,0 +1,4 @@
+# This module creates every IAM policy Upwind gets in a customer's OCI tenancy, so all changes need
+# review from the team that owns it. See modules/_shared/README.md for why the identity domain
+# replication grant in particular must keep its conditions.
+* @upwindsecurity/team-cloudscanner
