@@ -32,7 +32,3 @@ locals {
   }
 }
 
-# Get all subscribed regions for the tenancy
-data "oci_identity_region_subscriptions" "tenancy_regions" {
-  tenancy_id = var.oci_tenancy_id
-}

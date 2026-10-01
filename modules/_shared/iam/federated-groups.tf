@@ -108,6 +108,22 @@ locals {
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read all-resources in tenancy",
   ] : []
 
+  # Upwind replicates the identity domain to the tenancy's subscribed regions after onboarding.
+  # Oracle queues replications far longer than an apply's session token lasts, so the apply only
+  # grants the permission. The grant is limited to replicating this one domain.
+  # Tenant mode already reads domains through "read all-resources in tenancy"; OCI caps a tenancy at
+  # 500 policy statements, so the read is only added where it is missing.
+  domain_policy_at_tenancy = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id))
+  domain_policy_location   = local.domain_policy_at_tenancy ? "tenancy" : "compartment id ${var.root_level_compartment_id}"
+  federated_mgmt_group_domain_replication_permissions_list = concat(
+    local.domain_policy_at_tenancy ? [] : [
+      "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read domains in ${local.domain_policy_location}",
+    ],
+    [
+      "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage domains in ${local.domain_policy_location} where all { target.domain.id = '${data.oci_identity_domain.upwind_identity_domain.id}', request.permission = 'DOMAIN_REPLICATE' }",
+    ],
+  )
+
   # Federated management group tenancy-level IAM permissions (only if at tenancy level)
   federated_mgmt_group_tenancy_iam_permissions_list = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage policies in tenancy",
@@ -185,6 +201,15 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_iam_policy" {
   name           = format("federated-mgmt-group-tenancy-iam-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage IAM resources in tenancy"
   statements     = local.federated_mgmt_group_tenancy_iam_permissions_list
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+}
+
+resource "oci_identity_policy" "federated_mgmt_group_domain_replication_policy" {
+  compartment_id = var.root_level_compartment_id
+  name           = format("federated-mgmt-group-domain-replication-%s", local.resource_suffix_hyphen)
+  description    = "Allow federated management group to replicate the Upwind identity domain to subscribed regions"
+  statements     = local.federated_mgmt_group_domain_replication_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
 }
