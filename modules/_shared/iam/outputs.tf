@@ -36,6 +36,7 @@ output "vault_key" {
 
 output "oci_vault_secret" {
   description = "The secrets created in Vault."
+  sensitive   = true
   value = {
     upwind_client_id      = oci_vault_secret.upwind_client_id
     upwind_client_secret  = oci_vault_secret.upwind_client_secret
