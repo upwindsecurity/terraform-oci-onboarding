@@ -95,7 +95,9 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
   ]
 }
 
-# Grant compute viewer policy to CloudScanner dynamic group on each target compartment
+# Grant compute viewer policy to CloudScanner dynamic group on each target compartment.
+# Volume reads come from "manage volume-family" in the snapshot policy below, which is
+# created for the same compartments.
 resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
@@ -106,8 +108,6 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   defined_tags   = local.validated_defined_tags
   statements = [
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read boot-volumes in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read block-volumes in compartment id ${each.value}",
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read cluster-node-pools in compartment id ${each.value}"
   ]
 }
@@ -130,7 +130,6 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage boot-volume-backups in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}"
   ]
 }

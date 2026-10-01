@@ -145,7 +145,9 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
 }
 
 # Federated management group needs orchestrator compartment deployment permissions
-# Split into multiple policies to match dynamic group structure and avoid OCI errors
+# Split into multiple policies to match dynamic group structure and avoid OCI errors.
+# OCI caps a tenancy at 500 policy statements, so no statement repeats one that an
+# aggregate family (instance-family, volume-family, virtual-network-family) already grants.
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute" {
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-compute-%s", local.resource_suffix_hyphen)
@@ -161,29 +163,9 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage dedicated-vm-hosts in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-images in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instances in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage volume-family in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage vcns in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage vnics in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage virtual-network-family in compartment id ${var.upwind_orchestrator_compartment_id}"
-  ]
-}
-
-resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_network" {
-  compartment_id = var.root_level_compartment_id
-  name           = format("federated-mgmt-group-orchestrator-network-%s", local.resource_suffix_hyphen)
-  description    = "Allow federated management group to manage network resources in orchestrator compartment"
-  freeform_tags  = local.validated_tags
-  defined_tags   = local.validated_defined_tags
-  statements = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage vcns in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage virtual-network-family in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
 }
@@ -195,7 +177,6 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functio
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use compartments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions-family in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage cloudevents-rules in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
