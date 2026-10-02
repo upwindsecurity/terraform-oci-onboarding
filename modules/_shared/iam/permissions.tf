@@ -3,11 +3,10 @@ locals {
   # Format: ${var.upwind_orchestrator_compartment_id} = compartment or tenancy scope placeholder
 
   # CloudScanner Dynamic Group Permissions
-  # Tenancy-wide compute resource read access
+  # Tenancy-wide compute resource read access. Volume reads come from "manage volume-family in
+  # tenancy" in the snapshot list below, which is created under the same enable_cloudscanners gate.
   cloudscanner_tenancy_compute_read_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read instances in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read boot-volumes in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read block-volumes in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read instance-configurations in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read instance-pools in tenancy",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read work-requests in tenancy",
@@ -34,7 +33,6 @@ locals {
   # Tenancy-wide snapshot creation permissions
   cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage boot-volume-backups in tenancy",
     # Required to create snapshots in tenancies that apply defined-tag defaults
     # (e.g. Oracle-Tags.CreatedBy) to new resources: without permission to use
     # the tag namespace, OCI rejects the backup with "Invalid tags". Tag
@@ -90,7 +88,6 @@ locals {
 
   # CloudScanner networking permissions for scaling
   cloudscanner_networking_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage subnets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use subnets in compartment id ${var.upwind_orchestrator_compartment_id}"
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage subnets in compartment id ${var.upwind_orchestrator_compartment_id}"
   ] : []
 }
