@@ -56,25 +56,15 @@ resource "oci_identity_domain" "upwind_identity_domain" {
   }
 }
 
-# Replicate Identity Domain to all subscribed regions (excluding home region)
-# NOTE: Replication can only be initiated when the domain is ACTIVE
-resource "oci_identity_domain_replication_to_region" "upwind_identity_domain_replication" {
-  for_each = local.should_create_domain ? {
-    for rs in data.oci_identity_region_subscriptions.tenancy_regions.region_subscriptions :
-    rs.region_name => rs.region_name
-    if rs.region_name != var.oci_region && !rs.is_home_region
-  } : {}
+# onboarding-service replicates the domain after onboarding. Installs from earlier versions have
+# these replicas in state; the provider's delete for them is a no-op, but without this block their
+# plan would show every replica as destroyed. They are dropped from state instead and stay in OCI.
+removed {
+  from = oci_identity_domain_replication_to_region.upwind_identity_domain_replication
 
-  domain_id      = oci_identity_domain.upwind_identity_domain[0].id
-  replica_region = each.value
-
-  timeouts {
-    create = var.create_timeout
+  lifecycle {
+    destroy = false
   }
-
-  depends_on = [
-    oci_identity_domain.upwind_identity_domain
-  ]
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {

@@ -108,6 +108,31 @@ locals {
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read all-resources in tenancy",
   ] : []
 
+  # Upwind replicates the identity domain to the tenancy's subscribed regions after onboarding.
+  # Oracle queues replications far longer than an apply's session token lasts, so the apply only
+  # grants the permission. The grant is limited to replicating this one domain, and only exists when
+  # this module created the domain: a customer-supplied domain is the customer's to replicate, and it
+  # may live outside root_level_compartment_id, where a policy attached here would not reach it.
+  # Tenant mode already lists domains through "read all-resources in tenancy"; OCI caps a tenancy at
+  # 500 policy statements, so the inspect is only added where it is missing. It cannot carry
+  # target.domain.id: ListDomains, which onboarding-service uses to find the domain, does not support it.
+  domain_policy_at_tenancy = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id))
+  domain_policy_location   = local.domain_policy_at_tenancy ? "tenancy" : "compartment id ${var.root_level_compartment_id}"
+  # Both conditions are what make "manage domains" safe. Without target.domain.id it covers every
+  # domain in scope, the tenancy's Default domain included; without request.permission it covers
+  # update, deactivate and delete; "where any" instead of "where all" would grant either. The
+  # precondition on the policy below and the module tests reject a statement missing any of them.
+  upwind_domain_id             = data.oci_identity_domain.upwind_identity_domain.id
+  upwind_domain_replicate_only = "where all { target.domain.id = '${local.upwind_domain_id}', request.permission = 'DOMAIN_REPLICATE' }"
+  federated_mgmt_group_domain_replication_permissions_list = concat(
+    local.domain_policy_at_tenancy ? [] : [
+      "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to inspect domains in ${local.domain_policy_location}",
+    ],
+    [
+      "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage domains in ${local.domain_policy_location} ${local.upwind_domain_replicate_only}",
+    ],
+  )
+
   # Federated management group tenancy-level IAM permissions (only if at tenancy level)
   federated_mgmt_group_tenancy_iam_permissions_list = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage policies in tenancy",
@@ -187,6 +212,39 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_iam_policy" {
   statements     = local.federated_mgmt_group_tenancy_iam_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+}
+
+resource "oci_identity_policy" "federated_mgmt_group_domain_replication_policy" {
+  count          = local.should_create_domain ? 1 : 0
+  compartment_id = var.root_level_compartment_id
+  name           = format("federated-mgmt-group-domain-replication-%s", local.resource_suffix_hyphen)
+  description    = "Allow federated management group to replicate the Upwind identity domain to subscribed regions"
+  statements     = local.federated_mgmt_group_domain_replication_permissions_list
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    precondition {
+      condition     = can(regex("^ocid1\\.domain\\.", local.upwind_domain_id))
+      error_message = "The Upwind identity domain OCID is not known, so the domain replication grant cannot be scoped to it."
+    }
+    precondition {
+      # A policy only takes effect on resources in its own compartment and below.
+      condition     = oci_identity_domain.upwind_identity_domain[0].compartment_id == var.root_level_compartment_id
+      error_message = "The domain replication policy must be attached to the compartment the Upwind identity domain lives in, or it grants nothing."
+    }
+    precondition {
+      condition = alltrue([
+        for statement in local.federated_mgmt_group_domain_replication_permissions_list :
+        !can(regex("(?i)\\bmanage\\s+domains\\b", statement)) || (
+          can(regex("(?i)\\bwhere\\s+all\\s*\\{", statement)) &&
+          strcontains(statement, "target.domain.id = '${local.upwind_domain_id}'") &&
+          strcontains(statement, "request.permission = 'DOMAIN_REPLICATE'")
+        )
+      ])
+      error_message = "Every \"manage domains\" statement in the domain replication policy must be limited with \"where all { target.domain.id = '<Upwind domain>', request.permission = 'DOMAIN_REPLICATE' }\". Without both conditions it grants full control of every identity domain in scope."
+    }
+  }
 }
 
 # Federated management group secret access

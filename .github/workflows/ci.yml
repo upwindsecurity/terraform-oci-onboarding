@@ -94,6 +94,40 @@ jobs:
     - name: Run Terraform Validate
       run: terraform validate
 
+  terraform-test:
+    name: Terraform Test (${{ matrix.terraform_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 1.9.0 is the required_version floor.
+        terraform_version: ["1.9.0", "1.11.0"]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ matrix.terraform_version }}
+
+    # Runs every module that has a tests/ directory. The tests use a mock provider, so they need
+    # no OCI credentials. modules/_shared/iam pins the scoping of the domain replication grant.
+    - name: Run Terraform Test
+      run: |
+        set -euo pipefail
+        dirs=$(find modules -type d -name tests -exec dirname {} \; | sort)
+        if [ -z "$dirs" ]; then
+          echo "No module tests found"
+          exit 0
+        fi
+        for dir in $dirs; do
+          echo "::group::terraform test ($dir)"
+          terraform -chdir="$dir" init -backend=false -input=false
+          terraform -chdir="$dir" test
+          echo "::endgroup::"
+        done
+
   terraform-tflint:
     name: Terraform Lint (${{ matrix.module }})
     runs-on: ubuntu-latest
