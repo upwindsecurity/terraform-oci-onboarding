@@ -1,13 +1,15 @@
-module "main_basic" {
+# Basic example: onboard an entire OCI tenancy to Upwind with the root module and its defaults
+module "upwind_onboarding" {
   source = "../.."
 
-  enabled     = true
-  name        = "basic-example"
-  environment = "dev"
+  deployment_mode = "tenant"
 
-  tags = {
-    Environment = "dev"
-    Project     = "terraform-module-template"
-    Example     = "basic"
-  }
+  # Required Upwind configuration
+  upwind_organization_id = var.upwind_organization_id
+  upwind_client_id       = var.upwind_client_id
+  upwind_client_secret   = var.upwind_client_secret
+
+  # Required OCI configuration
+  oci_tenancy_id                  = var.oci_tenancy_id
+  upwind_orchestrator_compartment = var.upwind_orchestrator_compartment
 }
