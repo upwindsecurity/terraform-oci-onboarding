@@ -54,19 +54,17 @@ locals {
     "Allow service blockstorage to use keys in compartment id ${var.upwind_orchestrator_compartment_id}",
   ] : []
 
-  # Orchestrator compartment volume management permissions
+  # Orchestrator compartment volume permissions. The scanner restores each snapshot into a new
+  # volume in the orchestrator compartment (its own), attaches it to itself, then detaches and
+  # deletes it; the backups it restores from stay in the target compartments, covered by the
+  # volume-family grants there. "volumes" covers boot volumes too: OCI has no separate boot-volume
+  # or block-volume resource type, and no policy variable matches a volume's display name.
   cloudscanner_orchestrator_volume_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read block-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read boot-volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volumes in compartment id ${var.upwind_orchestrator_compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-attachments in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instances in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instance-pools in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage instance-configurations in compartment id ${var.upwind_orchestrator_compartment_id}"
-  ] : []
-
-  # Orchestrator compartment volume deletion with conditions
-  cloudscanner_orchestrator_volume_delete_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage block-volumes in compartment id ${var.upwind_orchestrator_compartment_id} where target.block-volume.name = /vol-*/",
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage boot-volumes in compartment id ${var.upwind_orchestrator_compartment_id} where target.boot-volume.name = /vol-*/"
   ] : []
 
   # CloudScanner secret access
