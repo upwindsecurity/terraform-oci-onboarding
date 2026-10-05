@@ -113,7 +113,7 @@ Allow group Administrators to manage compartments in tenancy
 - Identity Domain (0-1): Created automatically if `oci_domain_id` is not provided, or uses existing domain if `oci_domain_id` is provided
 - Workload Identity Federation Policy (1): AWS workload federation policy
 - Vault (0-1): Created if `oci_vault_id` is not provided
-- Vault Key (0-1): Created if `oci_vault_key_id` is not provided (or if using existing vault without key)
+- Vault Key (0-1): Created if `oci_vault_key_id` is not provided (or if using existing vault without key). When the module also creates the vault it waits `vault_endpoint_wait` (default 6m) after the vault is ACTIVE before creating the key, because the vault's management endpoint hostname takes a few minutes to appear on OCI's own resolvers and the provider does not retry a failed lookup.
 - Secrets (4): Upwind client ID/secret, scanner client ID/secret (if enabled)
 
 ## Vault Configuration

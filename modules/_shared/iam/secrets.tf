@@ -29,6 +29,15 @@ resource "oci_kms_vault" "upwind_vault" {
   }
 }
 
+# OCI's own resolvers publish the vault's management endpoint hostname a few minutes
+# after the vault turns ACTIVE, and the provider does not retry a failed DNS lookup.
+resource "time_sleep" "vault_endpoint_dns" {
+  count           = var.oci_vault_key_id == "" && var.oci_vault_id == "" ? 1 : 0
+  create_duration = var.vault_endpoint_wait
+
+  depends_on = [oci_kms_vault.upwind_vault]
+}
+
 # Create the Vault Key for encryption when using a newly created vault
 resource "oci_kms_key" "upwind_vault_key" {
   count               = var.oci_vault_key_id == "" && var.oci_vault_id == "" ? 1 : 0
@@ -47,6 +56,8 @@ resource "oci_kms_key" "upwind_vault_key" {
   timeouts {
     create = var.create_timeout
   }
+
+  depends_on = [time_sleep.vault_endpoint_dns]
 }
 
 # Create the Vault Key for encryption when using an existing vault but no key provided

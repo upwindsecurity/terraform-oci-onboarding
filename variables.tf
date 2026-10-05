@@ -217,6 +217,17 @@ variable "create_timeout" {
   }
 }
 
+variable "vault_endpoint_wait" {
+  description = "How long to wait after a newly created KMS vault becomes ACTIVE before creating its key, so the vault's management endpoint hostname has propagated on OCI resolvers. Only used when the module creates the vault. Specified as a Terraform duration string (e.g., \"6m\", \"300s\")."
+  type        = string
+  default     = "6m"
+
+  validation {
+    condition     = var.vault_endpoint_wait != "" && can(regex("^([0-9]+h)?([0-9]+m)?([0-9]+s)?$", var.vault_endpoint_wait))
+    error_message = "The vault_endpoint_wait must be a valid Terraform duration string (e.g., \"6m\", \"300s\", \"0s\")."
+  }
+}
+
 # endregion timeouts
 
 variable "enable_cloudscanners" {
