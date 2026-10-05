@@ -11,6 +11,16 @@ output "identity_domain_federation_info" {
   value       = var.deployment_mode == "tenant" ? module.tenant[0].identity_domain_federation_info : module.compartment[0].identity_domain_federation_info
 }
 
+output "identity_domain_id" {
+  description = "OCID of the identity domain holding Upwind's users, groups and OAuth app. When identity_domain_created_by_module is true, offboarding has to deactivate this domain before terraform destroy can delete it; see Offboarding in README.md."
+  value       = var.deployment_mode == "tenant" ? module.tenant[0].identity_domain_id : module.compartment[0].identity_domain_id
+}
+
+output "identity_domain_created_by_module" {
+  description = "True when this module created the identity domain (oci_domain_id was not set), so terraform destroy also deletes it. A customer-supplied domain is left in place."
+  value       = var.oci_domain_id == ""
+}
+
 output "identity_domain_oidc_issuer_url" {
   description = "OIDC issuer URL for the Identity Domain (for AWS IAM OIDC provider configuration)"
   value       = var.deployment_mode == "tenant" ? module.tenant[0].identity_domain_oidc_issuer_url : module.compartment[0].identity_domain_oidc_issuer_url
