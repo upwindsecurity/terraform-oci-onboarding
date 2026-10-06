@@ -54,6 +54,8 @@ module "upwind_compartment" {
   # If oci_vault_key_id is not provided, a new key will be created in the existing vault
   oci_vault_id     = "ocid1.vault.oc1..xxxxx"  # Optional: use existing vault
   oci_vault_key_id = "ocid1.key.oc1..xxxxx"    # Optional: use existing key (or create new key in vault)
+  vault_endpoint_wait = "6m"                  # Optional: wait after a new vault is ACTIVE before creating its key (default 6m)
+                                              # Existing deployments: set "0s" on the first apply after upgrading to skip the one-time wait
 
   # Optional Configuration
   enable_cloudscanners = true

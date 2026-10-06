@@ -23,7 +23,8 @@ module "tenant" {
   enable_dspm_scanning            = var.enable_dspm_scanning
 
   # Timeouts
-  create_timeout = var.create_timeout
+  create_timeout      = var.create_timeout
+  vault_endpoint_wait = var.vault_endpoint_wait
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.oci_tenancy_id
@@ -66,7 +67,8 @@ module "compartment" {
   enable_dspm_scanning               = var.enable_dspm_scanning
 
   # Timeouts
-  create_timeout = var.create_timeout
+  create_timeout      = var.create_timeout
+  vault_endpoint_wait = var.vault_endpoint_wait
 
   # Workload Identity Federation Configuration
   root_level_compartment_id       = var.root_level_compartment_id != "" ? var.root_level_compartment_id : var.upwind_orchestrator_compartment_id

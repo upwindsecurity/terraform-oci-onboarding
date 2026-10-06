@@ -35,5 +35,6 @@ module "iam" {
   oci_vault_key_id = var.oci_vault_key_id
 
   # Timeouts
-  create_timeout = var.create_timeout
+  create_timeout      = var.create_timeout
+  vault_endpoint_wait = var.vault_endpoint_wait
 }

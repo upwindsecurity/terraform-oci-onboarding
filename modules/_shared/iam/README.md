@@ -113,7 +113,7 @@ Allow group Administrators to manage compartments in tenancy
 - Identity Domain (0-1): Created automatically if `oci_domain_id` is not provided, or uses existing domain if `oci_domain_id` is provided
 - Workload Identity Federation Policy (1): AWS workload federation policy
 - Vault (0-1): Created if `oci_vault_id` is not provided
-- Vault Key (0-1): Created if `oci_vault_key_id` is not provided (or if using existing vault without key)
+- Vault Key (0-1): Created if `oci_vault_key_id` is not provided (or if using existing vault without key). When the module also creates the vault it waits `vault_endpoint_wait` (default 6m) after the vault is ACTIVE before creating the key, because the vault's management endpoint hostname takes a few minutes to appear on OCI's own resolvers and the provider does not retry a failed lookup.
 - Secrets (4): Upwind client ID/secret, scanner client ID/secret (if enabled)
 
 ## Vault Configuration
@@ -128,6 +128,16 @@ The module supports two modes for vault management:
    - If `oci_vault_key_id` is not provided, it will create a new key in the existing vault
 
 All secrets (client IDs and client secrets) are stored in the vault using the specified encryption key.
+
+### Waiting for the vault endpoint
+
+When the module creates the vault it waits `vault_endpoint_wait` (default 6m) after the vault is ACTIVE before creating the key. OCI's own resolvers take a few minutes to publish the vault's management endpoint hostname, and the provider does not retry a failed lookup, so without the wait the first apply from inside OCI (for example Cloud Shell) fails with "no such host".
+
+Three things to know about the wait:
+
+- It is a resource, so an existing deployment that upgrades to this version creates it on its next apply and waits once, even though its vault already exists. To skip that one-time wait, run that apply with `vault_endpoint_wait = "0s"`.
+- Changing the value later replaces the wait resource and waits once more. The key and secrets are not touched.
+- It does not apply when `oci_vault_id` is provided.
 
 ## Tagging
 
