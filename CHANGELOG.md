@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.11.4](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.11.3...v1.11.4) (2026-10-06)
+
+### Bug Fixes
+
+* **QC-437:** wait for the vault endpoint DNS before creating the vault key ([#77](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/77)) ([806ffde](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/806ffde8cbf8a10ffcbfb4cd54debb86b0534891))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
