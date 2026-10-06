@@ -129,6 +129,16 @@ The module supports two modes for vault management:
 
 All secrets (client IDs and client secrets) are stored in the vault using the specified encryption key.
 
+### Waiting for the vault endpoint
+
+When the module creates the vault it waits `vault_endpoint_wait` (default 6m) after the vault is ACTIVE before creating the key. OCI's own resolvers take a few minutes to publish the vault's management endpoint hostname, and the provider does not retry a failed lookup, so without the wait the first apply from inside OCI (for example Cloud Shell) fails with "no such host".
+
+Three things to know about the wait:
+
+- It is a resource, so an existing deployment that upgrades to this version creates it on its next apply and waits once, even though its vault already exists. To skip that one-time wait, run that apply with `vault_endpoint_wait = "0s"`.
+- Changing the value later replaces the wait resource and waits once more. The key and secrets are not touched.
+- It does not apply when `oci_vault_id` is provided.
+
 ## Tagging
 
 The module supports comprehensive tagging across all resources:
