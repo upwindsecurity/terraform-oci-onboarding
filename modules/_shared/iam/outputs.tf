@@ -36,6 +36,7 @@ output "vault_key" {
 
 output "oci_vault_secret" {
   description = "The secrets created in Vault."
+  sensitive   = true
   value = {
     upwind_client_id      = oci_vault_secret.upwind_client_id
     upwind_client_secret  = oci_vault_secret.upwind_client_secret
@@ -75,11 +76,6 @@ output "cloudscanner_compartment_kms_permissions" {
 output "cloudscanner_orchestrator_volume_permissions" {
   description = "CloudScanner dynamic group orchestrator compartment volume permissions."
   value       = local.cloudscanner_orchestrator_volume_permissions_list
-}
-
-output "cloudscanner_orchestrator_volume_delete_permissions" {
-  description = "CloudScanner dynamic group orchestrator compartment volume deletion permissions."
-  value       = local.cloudscanner_orchestrator_volume_delete_permissions_list
 }
 
 output "cloudscanner_secret_access_permissions" {
