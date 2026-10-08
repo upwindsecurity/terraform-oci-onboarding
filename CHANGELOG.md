@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.11.6](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.11.5...v1.11.6) (2026-10-08)
+
+### Bug Fixes
+
+* **UP-8482:** replace the template basic and complete examples ([#69](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/69)) ([4da3ee0](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/4da3ee05452e316b240e7a163c6f57096f91e419))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
