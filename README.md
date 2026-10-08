@@ -1,25 +1,56 @@
-# Terraform Module
+# Upwind OCI Onboarding
 
 [![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)](https://www.terraform.io/)
 [![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
-A comprehensive Terraform module template repository with automated testing,
-documentation generation, and release management.
+Terraform module that connects an Oracle Cloud Infrastructure (OCI) tenancy, or selected compartments in it, to
+[Upwind](https://www.upwind.io). It creates the IAM users, groups, dynamic groups and policies Upwind needs, an identity
+domain with workload identity federation, and a Vault holding the Upwind credentials. It can also deploy Upwind
+CloudScanners, with optional DSPM scanning.
 
-## Modules
+## Deployment modes
 
-This repository contains the following Terraform modules:
+The root module switches between two submodules with `deployment_mode`:
 
-- Root level - Main module with core functionality (switches between tenant and compartment deployment modes)
-- Additional modules can be added to extend functionality
+- `tenant` (default): grants Upwind access across the whole tenancy. Set `upwind_orchestrator_compartment` to the
+  compartment that holds Upwind's own resources.
+- `compartment`: grants Upwind access only to `target_compartment_ids`. Set `upwind_orchestrator_compartment_id`.
+  The CloudScanner dynamic group and the Upwind IAM users are still created at the tenancy root, so the caller needs
+  tenancy-level `manage dynamic-groups` and `manage users`.
+
+In both modes, apply from the tenancy's home region: OCI accepts writes to users, groups, dynamic groups and policies
+only there.
+
+## Usage
+
+```hcl
+module "upwind_onboarding" {
+  source = "git::https://github.com/upwindsecurity/terraform-oci-onboarding.git?ref=vX.Y.Z"
+
+  deployment_mode = "tenant"
+
+  upwind_organization_id = "org_xxxxxxxx"
+  upwind_client_id       = var.upwind_client_id
+  upwind_client_secret   = var.upwind_client_secret
+
+  oci_tenancy_id                  = "ocid1.tenancy.oc1..xxxx"
+  upwind_orchestrator_compartment = "ocid1.compartment.oc1..xxxx"
+}
+```
+
+Replace `vX.Y.Z` with a release from the [tags](https://github.com/upwindsecurity/terraform-oci-onboarding/tags).
+The supported Terraform and provider versions are in [versions.tf](./versions.tf).
+
+Before applying, `upwindctl oracle onboarding preflight` checks the tenancy, the caller's permissions and the inputs,
+so a problem is reported before Terraform creates anything.
 
 ## Examples
 
-Complete usage examples are available in the [examples](./examples/) directory:
-
-- [examples/basic/](./examples/basic/) - Basic usage of the main module
-- [examples/complete/](./examples/complete/) - Advanced configuration patterns with multiple module instances
+- [examples/basic/](./examples/basic/) - tenant mode through the root module, required inputs only
+- [examples/complete/](./examples/complete/) - compartment mode through the root module, with CloudScanners and DSPM
+- [examples/tenant/](./examples/tenant/) - the `tenant` submodule used directly
+- [examples/compartment/](./examples/compartment/) - the `compartment` submodule used directly
 
 ## Offboarding
 
@@ -63,20 +94,13 @@ Notes:
 
 ## Contributing
 
-We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) guide for details on:
-
-- Development setup and workflows
-- Testing procedures
-- Code standards and best practices
-- How to add new submodules
-
-For bug reports and feature requests, please use
-[GitHub Issues](https://github.com/upwindsecurity/terraform-module/issues).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, testing and code standards. Report bugs and request
+features through [GitHub Issues](https://github.com/upwindsecurity/terraform-oci-onboarding/issues).
 
 ## Versioning
 
-We use [Semantic Versioning](http://semver.org/) for releases. For the versions
-available, see the [tags on this repository](https://github.com/upwindsecurity/terraform-module/tags).
+Releases follow [Semantic Versioning](http://semver.org/) and are published as
+[tags on this repository](https://github.com/upwindsecurity/terraform-oci-onboarding/tags).
 
 ## License
 
@@ -85,5 +109,4 @@ This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE
 ## Support
 
 - [Documentation](https://docs.upwind.io)
-- [Issues](https://github.com/upwindsecurity/terraform-module/issues)
-- [Contributing Guide](./CONTRIBUTING.md)
+- [Issues](https://github.com/upwindsecurity/terraform-oci-onboarding/issues)
