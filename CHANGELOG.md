@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.11.5](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.11.4...v1.11.5) (2026-10-07)
+
+### Bug Fixes
+
+* **UP-8725:** grant CloudScanner its scan-volume lifecycle in the orchestrator compartment ([#75](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/75)) ([5c6c933](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/5c6c933b643697d0f72747532a122ac16dd9d328)), closes [#71](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/71)
+* **UP-8754:** document the identity domain teardown and expose its OCID ([#76](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/76)) ([b4ec55f](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/b4ec55f0de3676d8d14c994f5ca6d2850bf62e19))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
