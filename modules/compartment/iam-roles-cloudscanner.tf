@@ -86,7 +86,7 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-registry-read-%s", local.resource_suffix_hyphen)
+  name           = format("cs-registry-read-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to read container registry repositories"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
@@ -102,7 +102,7 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-compute-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("cs-compute-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to view compute resources"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
@@ -125,7 +125,7 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-snapshot-create-%s", local.resource_suffix_hyphen)
+  name           = format("cs-snapshot-create-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to create volume snapshots (backups)"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags

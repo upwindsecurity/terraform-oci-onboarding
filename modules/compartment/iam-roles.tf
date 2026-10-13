@@ -53,7 +53,7 @@ resource "oci_identity_policy" "upwind_management_group_compartment_viewer_polic
   for_each = toset(var.target_compartment_ids)
 
   compartment_id = each.value
-  name           = format("mgmt-compartment-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("mgmt-compartment-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow management group to view compartment resources"
   freeform_tags  = local.validated_tags
   statements = [
@@ -66,7 +66,7 @@ resource "oci_identity_policy" "upwind_management_group_asset_viewer_policy" {
   for_each = toset(var.target_compartment_ids)
 
   compartment_id = each.value
-  name           = format("mgmt-asset-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("mgmt-asset-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow management group to view assets"
   freeform_tags  = local.validated_tags
   statements = [
