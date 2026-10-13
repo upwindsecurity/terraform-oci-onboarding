@@ -156,13 +156,13 @@ variable "identity_domain_description" {
 }
 
 variable "identity_domain_license_type" {
-  description = "License type for the identity domain. Valid values: 'DEFAULT', 'PREMIUM', 'STARTER'"
+  description = "License type for the identity domain. Valid values: 'free', 'premium'"
   type        = string
-  default     = "DEFAULT"
+  default     = "free"
 
   validation {
-    condition     = contains(["DEFAULT", "PREMIUM", "STARTER"], var.identity_domain_license_type)
-    error_message = "The identity_domain_license_type must be one of: DEFAULT, PREMIUM, STARTER."
+    condition     = contains(["free", "premium"], var.identity_domain_license_type)
+    error_message = "The identity_domain_license_type must be one of: free, premium."
   }
 }
 

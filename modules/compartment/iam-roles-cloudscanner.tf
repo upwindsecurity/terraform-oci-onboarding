@@ -91,7 +91,7 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read repos in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read repos in compartment id ${each.value}"
   ]
 }
 
@@ -107,8 +107,8 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read cluster-node-pools in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read instances in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read cluster-node-pools in compartment id ${each.value}"
   ]
 }
 
@@ -130,6 +130,6 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to manage volume-family in compartment id ${each.value}"
   ]
 }
