@@ -1,8 +1,14 @@
 ### Shared IAM Module Outputs
 
+# Re-exports the whole shared IAM module, which carries the vault secrets and the
+# confidential app client secret. Both are marked sensitive at their source, so
+# this aggregate has to be marked too - without it Terraform refuses to evaluate
+# the output whenever this module is used as a root module, and any caller
+# re-exporting it would carry the secrets onward unmarked.
 output "iam_module" {
   description = "The shared IAM module outputs."
   value       = module.iam
+  sensitive   = true
 }
 
 ### Orchestrator Compartment Policies
@@ -116,6 +122,39 @@ output "upwind_cloudscanner_dg_compute_viewer_policies" {
   description = "The compute viewer policies for CloudScanner dynamic group (one per target compartment)."
   value = var.enable_cloudscanners ? {
     for k, v in oci_identity_policy.upwind_cloudscanner_dg_compute_viewer_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  } : {}
+}
+
+output "upwind_cloudscanner_dg_registry_read_policies" {
+  description = "The container registry read policies for CloudScanner dynamic group (one per target compartment)."
+  value = var.enable_cloudscanners ? {
+    for k, v in oci_identity_policy.upwind_cloudscanner_dg_registry_read_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  } : {}
+}
+
+output "upwind_cloudscanner_dg_snapshot_create_policies" {
+  description = "The snapshot (volume backup) creation policies for CloudScanner dynamic group (one per target compartment)."
+  value = var.enable_cloudscanners ? {
+    for k, v in oci_identity_policy.upwind_cloudscanner_dg_snapshot_create_policy : k => {
+      id         = v.id
+      name       = v.name
+      statements = v.statements
+    }
+  } : {}
+}
+
+output "upwind_cloudscanner_dg_kms_policies" {
+  description = "The KMS usage policies for CloudScanner dynamic group (one per target compartment)."
+  value = var.enable_cloudscanners ? {
+    for k, v in oci_identity_policy.upwind_cloudscanner_dg_kms_policy : k => {
       id         = v.id
       name       = v.name
       statements = v.statements

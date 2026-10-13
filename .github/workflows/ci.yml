@@ -94,6 +94,40 @@ jobs:
     - name: Run Terraform Validate
       run: terraform validate
 
+  terraform-test:
+    name: Terraform Test (${{ matrix.terraform_version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # 1.9.0 is the required_version floor; keep it here so nothing newer slips in.
+        terraform_version: ["1.9.0", "1.11.0"]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ matrix.terraform_version }}
+
+    # `terraform init` also installs the modules that the `module` blocks in
+    # tests/ reference, so it has to run before `terraform test`.
+    - name: Run Terraform Init
+      run: terraform init -backend=false
+
+    # Runs against a mocked OCI provider - no tenancy and no credentials - so
+    # this is safe to run on every pull request, unlike the `examples` job
+    # below which plans for real.
+    #
+    # This is deliberately NOT gated behind a label. `terraform validate`, which
+    # was the only automated check for a long time, does not evaluate variable
+    # validation rules or resource expressions against real values; compartment
+    # mode was merged in a state where it could not complete a plan at all and
+    # that survived several pull requests undetected.
+    - name: Run Terraform Test
+      run: terraform test
+
   terraform-tflint:
     name: Terraform Lint (${{ matrix.module }})
     runs-on: ubuntu-latest
