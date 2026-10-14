@@ -83,25 +83,8 @@ locals {
   # Group permission lists mirror the dynamic group permissions but use "group" instead of "dynamic-group"
   # These permissions allow WIF-authenticated users (via group membership) to deploy into the orchestrator compartment
 
-  # Federated management group orchestrator compartment deployment permissions
-  # Split into separate lists for compute, network, and functions to match tenant/compartment module structure
-  federated_mgmt_group_orchestrator_deploy_compute_permissions_list = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-configurations in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage instance-family in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage volume-family in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read availability-domains in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read images in compartment id %s"
-  ]
 
-  federated_mgmt_group_orchestrator_deploy_network_permissions_list = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage virtual-network-family in compartment id %s"
-  ]
 
-  federated_mgmt_group_orchestrator_deploy_functions_permissions_list = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions-family in compartment id %s",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage cloudevents-rules in compartment id %s"
-  ]
 
   # Federated management group tenancy-wide read permissions (only if at tenancy level)
   federated_mgmt_group_tenancy_read_permissions_list = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [

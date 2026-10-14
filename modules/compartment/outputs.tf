@@ -11,44 +11,6 @@ output "iam_module" {
   sensitive   = true
 }
 
-### Orchestrator Compartment Policies
-
-output "mgmt_group_orchestrator_deploy_compute" {
-  description = "Management group orchestrator compartment compute deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.statements
-  }
-}
-
-output "mgmt_group_orchestrator_deploy_network" {
-  description = "Management group orchestrator compartment network deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_network.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_network.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_network.statements
-  }
-}
-
-output "mgmt_group_orchestrator_deploy_functions" {
-  description = "Management group orchestrator compartment functions deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.statements
-  }
-}
-
-output "mgmt_group_secret_access_policy" {
-  description = "Management group secret access policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_secret_access_policy.id
-    name       = oci_identity_policy.mgmt_group_secret_access_policy.name
-    statements = oci_identity_policy.mgmt_group_secret_access_policy.statements
-  }
-}
-
 ### Target Compartment Policies
 
 output "upwind_management_group_compartment_viewer_policies" {
