@@ -12,6 +12,30 @@ locals {
   # Create resource suffixes that include both org_id and user-provided suffix
   resource_suffix_hyphen = format("%s%s", local.org_id_truncated, var.resource_suffix == "" ? "" : "-${var.resource_suffix}")
 
+  # Per-target-compartment name discriminator.
+  #
+  # OCI policy names must be unique across the whole TENANCY, not just within the
+  # compartment that holds the policy. The policies below are created once per
+  # entry in target_compartment_ids, so without a discriminator the second
+  # compartment's policy collides with the first and the apply fails with a 409 -
+  # compartment mode would only ever work with exactly one target compartment.
+  #
+  # (The ancestor this module was ported from, terraform-google-onboarding's
+  # multiproject module, repeats one name across every target because a GCP
+  # custom role ID only has to be unique within its project. That assumption does
+  # not carry over to OCI.)
+  #
+  # A hash of the compartment OCID rather than a random_id: the name stays
+  # derivable from the inputs alone, so it survives a state loss and never churns
+  # on re-apply. 8 hex characters is ample - collisions would need two target
+  # OCIDs sharing a 32-bit prefix - and keeps the longest resulting name
+  # (mgmt-compartment-viewer-<suffix>-<hash>) at 49 characters against OCI's 100
+  # character limit.
+  target_compartment_discriminator = {
+    for compartment_id in var.target_compartment_ids :
+    compartment_id => substr(sha256(compartment_id), 0, 8)
+  }
+
   # Merge default tags with user-provided tags
   # User tags override defaults if keys conflict
   merged_tags = merge(var.default_tags, var.tags)

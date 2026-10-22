@@ -111,12 +111,12 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-registry-read-%s", local.resource_suffix_hyphen)
+  name           = format("cs-registry-read-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to read container registry repositories"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read repos in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read repos in compartment id ${each.value}"
   ]
 
   lifecycle {
@@ -128,17 +128,31 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
 # Grant compute viewer policy to CloudScanner dynamic group on each target compartment.
 # Volume reads come from "manage volume-family" in the snapshot policy below, which is
 # created for the same compartments.
+#
+# This set mirrors the tenancy-wide cloudscanner_tenancy_compute_read_permissions_list
+# in modules/_shared/iam/permissions.tf, which the tenant module grants via
+# cs-tenancy-compute-read. Keep the two in step: a resource type readable in tenant
+# mode but not here is a scan that silently works for one customer and not another.
+#
+# read work-requests in particular is not optional. Volume backup creation is
+# asynchronous - CreateVolumeBackup returns a work request that the scanner polls to
+# learn when the snapshot is usable - and the work request is created in the
+# compartment the backup lands in, which is the target compartment, not the
+# orchestrator.
 resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-compute-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("cs-compute-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to view compute resources"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read cluster-node-pools in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read instances in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read instance-configurations in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read instance-pools in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read work-requests in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to read cluster-node-pools in compartment id ${each.value}"
   ]
 
   lifecycle {
@@ -160,12 +174,49 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
 
   compartment_id = each.value
-  name           = format("cs-snapshot-create-%s", local.resource_suffix_hyphen)
+  name           = format("cs-snapshot-create-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow cloudscanner dynamic group to create volume snapshots (backups)"
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}"
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to manage volume-family in compartment id ${each.value}"
+  ]
+}
+
+# Grant KMS usage to the CloudScanner dynamic group on each target compartment.
+#
+# The cs-kms policy above covers the orchestrator compartment, which is where the
+# scanner restores a snapshot into a working volume. That is only half the path.
+# Snapshotting a volume that is encrypted with a customer-managed key also needs
+# key access where the SOURCE key lives, and for a volume in a target compartment
+# that key is in the customer's own vault, not the orchestrator's. Without this,
+# unencrypted volumes scan fine and encrypted ones fail - a partial, confusing
+# failure mode rather than an obvious one.
+#
+# The tenant module sidesteps the question by granting these tenancy-wide via
+# cs-tenancy-kms (modules/tenant/iam-roles-cloudscanner.tf).
+#
+# Scope caveat: this covers keys held in the compartments being onboarded, which
+# is the common arrangement. A tenancy that keeps its vaults in a separate
+# security compartment that is NOT in target_compartment_ids still needs an
+# equivalent grant added by hand on that compartment - see the compartment-mode
+# prerequisites in the README.
+#
+# "Allow service blockstorage to use keys" is a service grant, not a dynamic-group
+# grant: the Block Storage service itself performs the decrypt during the backup,
+# so it needs its own permission on the key alongside the scanner's.
+resource "oci_identity_policy" "upwind_cloudscanner_dg_kms_policy" {
+  for_each = var.enable_cloudscanners ? toset(var.target_compartment_ids) : toset([])
+
+  compartment_id = each.value
+  name           = format("cs-kms-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
+  description    = "Allow cloudscanner dynamic group to delegate and use KMS keys in target compartment"
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
+  statements = [
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to use key-delegate in compartment id ${each.value}",
+    "Allow dynamic-group ${module.iam.cloudscanner_dg.name} to use keys in compartment id ${each.value}",
+    "Allow service blockstorage to use keys in compartment id ${each.value}"
   ]
 
   lifecycle {
