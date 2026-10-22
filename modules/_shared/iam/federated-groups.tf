@@ -5,7 +5,7 @@
 
 # Create an Identity Domain group for federated management users
 resource "oci_identity_domains_group" "upwind_federated_mgmt_group" {
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   display_name  = format("upwind-federated-mgmt-%s", local.resource_suffix_hyphen)
   schemas = [
     "urn:ietf:params:scim:schemas:core:2.0:Group",
@@ -43,7 +43,7 @@ resource "oci_identity_domains_group" "upwind_federated_mgmt_group" {
 
 # Create an Identity Domain group for federated reader users
 resource "oci_identity_domains_group" "upwind_federated_reader_group" {
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   display_name  = format("upwind-federated-reader-%s", local.resource_suffix_hyphen)
   schemas = [
     "urn:ietf:params:scim:schemas:core:2.0:Group",
@@ -142,6 +142,11 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
   statements     = local.federated_mgmt_group_tenancy_read_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Federated management group needs orchestrator compartment deployment permissions
@@ -164,6 +169,11 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read work-requests in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage virtual-network-family in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functions" {
@@ -176,6 +186,11 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functio
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage functions-family in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage cloudevents-rules in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Federated management group tenancy-level IAM permissions (tenant mode only)
@@ -187,6 +202,11 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_iam_policy" {
   statements     = local.federated_mgmt_group_tenancy_iam_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Federated management group secret access
@@ -197,6 +217,11 @@ resource "oci_identity_policy" "federated_mgmt_group_secret_access_policy" {
   statements     = local.federated_mgmt_group_secret_access_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Federated reader group tenancy-wide read access (tenant mode only)
@@ -208,5 +233,10 @@ resource "oci_identity_policy" "federated_reader_group_tenancy_read_policy" {
   statements     = local.federated_reader_group_tenancy_read_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 

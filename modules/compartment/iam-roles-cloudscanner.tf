@@ -22,6 +22,11 @@ resource "oci_identity_policy" "cs_dg_secret_access_policy" {
   statements     = module.iam.cloudscanner_secret_access_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner functions permissions
@@ -33,6 +38,11 @@ resource "oci_identity_policy" "cs_dg_functions_policy" {
   statements     = module.iam.cloudscanner_functions_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner object storage permissions
@@ -44,6 +54,11 @@ resource "oci_identity_policy" "cs_dg_object_storage_policy" {
   statements     = module.iam.cloudscanner_object_storage_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner networking permissions for scaling
@@ -55,6 +70,11 @@ resource "oci_identity_policy" "cs_dg_networking_policy" {
   statements     = module.iam.cloudscanner_networking_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner KMS permissions for encrypted volume restore
@@ -66,6 +86,11 @@ resource "oci_identity_policy" "cs_dg_kms_policy" {
   statements     = module.iam.cloudscanner_compartment_kms_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 ### Target Compartment Policies (created in each target compartment)
@@ -93,6 +118,11 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_registry_read_policy" {
   statements = [
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read repos in compartment id ${each.value}"
   ]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Grant compute viewer policy to CloudScanner dynamic group on each target compartment.
@@ -110,6 +140,11 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_compute_viewer_policy" {
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read instances in compartment id ${each.value}",
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to read cluster-node-pools in compartment id ${each.value}"
   ]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Grant snapshot (volume backup) management to CloudScanner dynamic group on each
@@ -132,4 +167,9 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   statements = [
     "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}"
   ]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }

@@ -15,6 +15,8 @@ resource "oci_identity_dynamic_group" "cloudscanner_dg" {
   defined_tags  = local.validated_defined_tags
 
   lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
     precondition {
       condition     = length(format("upwind-cs-%s", local.resource_suffix_hyphen)) <= 100
       error_message = "Dynamic group name cannot exceed 100 characters."
@@ -38,6 +40,8 @@ resource "oci_identity_user" "upwind_management_user" {
   defined_tags   = local.validated_defined_tags
 
   lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
     precondition {
       condition     = length(format("upwind-mgmt-%s", local.resource_suffix_hyphen)) <= 30
       error_message = "User name cannot exceed 30 characters."
@@ -54,6 +58,8 @@ resource "oci_identity_user" "upwind_ro_user" {
   defined_tags   = local.validated_defined_tags
 
   lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
     precondition {
       condition     = length(format("upwind-ro-%s", local.resource_suffix_hyphen)) <= 30
       error_message = "User name cannot exceed 30 characters."
@@ -71,6 +77,8 @@ resource "oci_identity_user" "cloudscanner_user" {
   defined_tags   = local.validated_defined_tags
 
   lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
     precondition {
       condition     = length(format("upwind-cs-%s", local.resource_suffix_hyphen)) <= 30
       error_message = "User name cannot exceed 30 characters."

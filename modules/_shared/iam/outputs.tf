@@ -117,7 +117,7 @@ output "identity_domain_federation_info" {
   value = {
     identity_domain_id   = local.should_create_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.oci_domain_id) : var.oci_domain_id
     identity_domain_name = local.should_create_domain ? try(oci_identity_domain.upwind_identity_domain[0].display_name, var.identity_domain_name) : var.identity_domain_name
-    oidc_issuer_url      = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : data.oci_identity_domain.upwind_identity_domain.url
+    oidc_issuer_url      = var.identity_domain_oidc_issuer_url != "" ? var.identity_domain_oidc_issuer_url : local.identity_domain_url
     management_user_name = oci_identity_user.upwind_management_user.name
     federated_group_name = oci_identity_domains_group.upwind_federated_mgmt_group.display_name
     aws_account_id       = var.is_dev ? "437279811180" : "627244208106"

@@ -18,6 +18,13 @@ locals {
 
   # Set public key endpoint based on dev or prod
   public_key_endpoint = var.is_dev ? "https://get.upwind.dev" : "https://get.upwind.io"
+
+  # The domain's IDCS endpoint, which every resource inside the domain is keyed on. For a domain this
+  # module creates it comes from the resource, not the data source: a data source that reads a
+  # resource with pending changes is deferred to apply, so any in-place update to the domain (such as
+  # OCI's tag defaults adding Oracle-Tags after create) made the endpoint unknown and replaced the
+  # OAuth app, users, groups and trust on every re-apply, rotating the client credentials.
+  identity_domain_url = local.should_create_domain ? one(oci_identity_domain.upwind_identity_domain[*].url) : one(data.oci_identity_domain.upwind_identity_domain[*].url)
 }
 
 
@@ -25,9 +32,11 @@ locals {
 ### Workload Identity Federation for AWS to OCI Authentication
 ### See: https://docs.oracle.com/en-us/iaas/Content/Identity/domains/overview.htm
 
+# Only read for a customer-supplied domain. A domain this module creates is read from the resource,
+# see local.identity_domain_url.
 data "oci_identity_domain" "upwind_identity_domain" {
-  # Use created domain ID if creating, otherwise use provided oci_domain_id
-  domain_id = local.should_create_domain ? try(oci_identity_domain.upwind_identity_domain[0].id, var.oci_domain_id) : var.oci_domain_id
+  count     = local.should_create_domain ? 0 : 1
+  domain_id = var.oci_domain_id
 }
 
 # Create Identity Domain for workload identity federation
@@ -52,7 +61,8 @@ resource "oci_identity_domain" "upwind_identity_domain" {
       error_message = "Either identity_domain_display_name must be provided or resource_suffix must be set when creating an identity domain."
     }
     # Ignore changes to description as it's not critical and may be updated externally
-    ignore_changes = [description]
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [description, defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
   }
 }
 
@@ -78,7 +88,7 @@ resource "oci_identity_domain_replication_to_region" "upwind_identity_domain_rep
 }
 
 resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   display_name  = "upwind-identity-domain-oidc-client-${local.resource_suffix_hyphen}"
   active        = true
   schemas = [
@@ -117,7 +127,7 @@ resource "oci_identity_domains_app" "upwind_identity_domain_oidc_client" {
 # Create Identity Domain user for management operations
 # This user corresponds to the OCI IAM user and is used for token exchange
 resource "oci_identity_domains_user" "upwind_management_user" {
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   user_name     = oci_identity_user.upwind_management_user.email
   description   = "deployment"
 
@@ -159,7 +169,7 @@ resource "oci_identity_domains_user" "upwind_management_user" {
 }
 
 resource "oci_identity_domains_user" "upwind_ro_user" {
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   user_name     = oci_identity_user.upwind_ro_user.email
   description   = "reader"
 
@@ -202,7 +212,7 @@ resource "oci_identity_domains_user" "upwind_ro_user" {
 
 resource "oci_identity_domains_user" "cloudscanner_user" {
   count         = var.enable_cloudscanners ? 1 : 0
-  idcs_endpoint = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint = local.identity_domain_url
   user_name     = oci_identity_user.cloudscanner_user[0].email
   description   = "cloudscanner"
 
@@ -244,7 +254,7 @@ resource "oci_identity_domains_user" "cloudscanner_user" {
 }
 
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
-  idcs_endpoint       = data.oci_identity_domain.upwind_identity_domain.url
+  idcs_endpoint       = local.identity_domain_url
   issuer              = var.is_dev ? "upwind.dev" : "upwind.io"
   name                = "upwind-identity-domain-token-exchange-trust-${local.resource_suffix_hyphen}"
   schemas             = ["urn:ietf:params:scim:schemas:oracle:idcs:IdentityPropagationTrust"]

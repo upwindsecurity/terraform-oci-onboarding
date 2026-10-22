@@ -27,6 +27,11 @@ resource "oci_kms_vault" "upwind_vault" {
   timeouts {
     create = var.create_timeout
   }
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # OCI's own resolvers publish the vault's management endpoint hostname a few minutes
@@ -58,6 +63,11 @@ resource "oci_kms_key" "upwind_vault_key" {
   }
 
   depends_on = [time_sleep.vault_endpoint_dns]
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Create the Vault Key for encryption when using an existing vault but no key provided
@@ -77,6 +87,11 @@ resource "oci_kms_key" "upwind_vault_key_existing_vault" {
 
   timeouts {
     create = var.create_timeout
+  }
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
   }
 }
 
@@ -100,6 +115,11 @@ resource "oci_vault_secret" "upwind_client_id" {
   description   = "Upwind client ID for authentication"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 resource "oci_vault_secret" "upwind_client_secret" {
@@ -114,6 +134,11 @@ resource "oci_vault_secret" "upwind_client_secret" {
   description   = "Upwind client secret for authentication"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 resource "oci_vault_secret" "scanner_client_id" {
@@ -129,6 +154,11 @@ resource "oci_vault_secret" "scanner_client_id" {
   description   = "Upwind scanner client ID for authentication"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 resource "oci_vault_secret" "scanner_client_secret" {
@@ -144,6 +174,11 @@ resource "oci_vault_secret" "scanner_client_secret" {
   description   = "Upwind scanner client secret for authentication"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Create an empty secret but apply the user-defined tags to the resource
@@ -159,4 +194,9 @@ resource "oci_vault_secret" "terraform_tags" {
   description   = "Default tags stored as resource metadata"
   freeform_tags = local.validated_tags
   defined_tags  = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
