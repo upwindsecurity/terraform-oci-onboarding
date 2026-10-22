@@ -17,4 +17,9 @@ resource "oci_identity_policy" "cs_dg_orchestrator_volume_policy" {
   statements     = local.cloudscanner_orchestrator_volume_permissions_list
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }

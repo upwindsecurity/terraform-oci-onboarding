@@ -13,6 +13,11 @@ resource "oci_identity_policy" "cs_dg_tenancy_compute_read_policy" {
   statements     = module.iam.cloudscanner_tenancy_compute_read_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner needs tenancy-wide registry read to pull the images it scans
@@ -24,6 +29,11 @@ resource "oci_identity_policy" "cs_dg_tenancy_registry_read_policy" {
   statements     = module.iam.cloudscanner_tenancy_registry_read_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner needs tenancy-wide snapshot management
@@ -35,6 +45,11 @@ resource "oci_identity_policy" "cs_dg_tenancy_snapshot_create_policy" {
   statements     = module.iam.cloudscanner_tenancy_snapshot_create_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # Cloudscanner needs tenancy-wide kms access for encrypted volumes
@@ -61,6 +76,11 @@ resource "oci_identity_policy" "cs_dg_secret_access_policy" {
   statements     = module.iam.cloudscanner_secret_access_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner functions permissions
@@ -72,6 +92,11 @@ resource "oci_identity_policy" "cs_dg_functions_policy" {
   statements     = module.iam.cloudscanner_functions_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner object storage permissions
@@ -83,6 +108,11 @@ resource "oci_identity_policy" "cs_dg_object_storage_policy" {
   statements     = module.iam.cloudscanner_object_storage_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
 
 # CloudScanner networking permissions for scaling
@@ -94,4 +124,9 @@ resource "oci_identity_policy" "cs_dg_networking_policy" {
   statements     = module.iam.cloudscanner_networking_permissions
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
+
+  lifecycle {
+    # OCI's tag defaults add these after create; without this every plan would strip them.
+    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
+  }
 }
