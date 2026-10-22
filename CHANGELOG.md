@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.11.7](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.11.6...v1.11.7) (2026-10-22)
+
+### Bug Fixes
+
+* **UP-10198:** stop re-applies replacing the identity domain's OAuth app ([#82](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/82)) ([7b6606a](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/7b6606a9dec856b9ab97531fe858185d3b41961a))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
