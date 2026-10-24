@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.8.4](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.8.3...v1.8.4) (2026-06-29)
+
+### Bug Fixes
+
+* **UP-2657:** add a timeout for oracle creation ([#52](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/52)) ([4189069](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/418906906037e9f04b5e2f2fff933fe3262607f4))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
