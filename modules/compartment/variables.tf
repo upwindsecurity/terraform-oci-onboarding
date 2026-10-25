@@ -218,6 +218,12 @@ variable "enable_cloudscanners" {
   default     = false
 }
 
+variable "enable_cloudlogs" {
+  description = "Create the audit-logs WIF user and group (trust role cloudlogs). The terraform-oci-cloudlogs module grants the group its bucket and stream access."
+  type        = bool
+  default     = false
+}
+
 variable "enable_dspm_scanning" {
   description = "Enable DSPM scanning by cloud scanners"
   type        = bool

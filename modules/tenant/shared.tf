@@ -14,6 +14,7 @@ module "iam" {
   scanner_client_secret  = var.scanner_client_secret
   resource_suffix        = var.resource_suffix
   enable_cloudscanners   = var.enable_cloudscanners
+  enable_cloudlogs       = var.enable_cloudlogs
   tags                   = var.tags
   default_tags           = var.default_tags
   defined_tags           = var.defined_tags

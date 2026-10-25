@@ -229,6 +229,12 @@ variable "enable_cloudscanners" {
   default     = true
 }
 
+variable "enable_cloudlogs" {
+  description = "Create the audit-logs WIF user and group (trust role cloudlogs). The terraform-oci-cloudlogs module grants the group its bucket and stream access."
+  type        = bool
+  default     = false
+}
+
 variable "upwind_region" {
   description = "The region of the Upwind organization."
   type        = string
