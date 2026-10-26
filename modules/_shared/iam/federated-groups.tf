@@ -80,6 +80,12 @@ resource "oci_identity_domains_group" "upwind_federated_reader_group" {
 }
 
 locals {
+  # Condition appended to every "read all-resources" grant. "read" on objects and secret-bundles
+  # returns their contents: GetObject/HeadObject need OBJECT_READ and GetSecretBundle needs
+  # SECRET_BUNDLE_READ. Upwind's inventory only lists and describes resources (ListBuckets,
+  # ListSecrets, ListVaults, ...), so it keeps every other read permission and loses only these two.
+  read_all_resources_content_exclusion = "where all {request.permission != 'OBJECT_READ', request.permission != 'SECRET_BUNDLE_READ'}"
+
   # Group permission lists mirror the dynamic group permissions but use "group" instead of "dynamic-group"
   # These permissions allow WIF-authenticated users (via group membership) to deploy into the orchestrator compartment
 
@@ -105,7 +111,7 @@ locals {
 
   # Federated management group tenancy-wide read permissions (only if at tenancy level)
   federated_mgmt_group_tenancy_read_permissions_list = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read all-resources in tenancy",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read all-resources in tenancy ${local.read_all_resources_content_exclusion}",
   ] : []
 
   # Federated management group tenancy-level IAM permissions (only if at tenancy level)
@@ -124,7 +130,7 @@ locals {
 
   # Federated reader group tenancy-wide read permissions
   federated_reader_group_tenancy_read_permissions_list = [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read all-resources in tenancy",
+    "Allow group id ${oci_identity_domains_group.upwind_federated_reader_group.ocid} to read all-resources in tenancy ${local.read_all_resources_content_exclusion}",
   ]
 
 }

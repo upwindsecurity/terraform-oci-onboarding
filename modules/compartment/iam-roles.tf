@@ -79,7 +79,7 @@ resource "oci_identity_policy" "upwind_management_group_compartment_viewer_polic
   description    = "Allow management group to view compartment resources"
   freeform_tags  = local.validated_tags
   statements = [
-    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value}"
+    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value} ${module.iam.read_all_resources_content_exclusion}"
   ]
 }
 
@@ -92,6 +92,6 @@ resource "oci_identity_policy" "upwind_management_group_asset_viewer_policy" {
   description    = "Allow management group to view assets"
   freeform_tags  = local.validated_tags
   statements = [
-    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value}"
+    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value} ${module.iam.read_all_resources_content_exclusion}"
   ]
 }

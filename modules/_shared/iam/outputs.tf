@@ -168,6 +168,11 @@ output "federated_mgmt_group_orchestrator_deploy_functions_permissions" {
   value       = local.federated_mgmt_group_orchestrator_deploy_functions_permissions_list
 }
 
+output "read_all_resources_content_exclusion" {
+  description = "Condition appended to \"read all-resources\" grants so they exclude object and secret contents (OBJECT_READ, SECRET_BUNDLE_READ)."
+  value       = local.read_all_resources_content_exclusion
+}
+
 output "federated_mgmt_group_tenancy_read_permissions" {
   description = "Federated management group tenancy-wide read permissions (tenant mode only)."
   value       = local.federated_mgmt_group_tenancy_read_permissions_list
