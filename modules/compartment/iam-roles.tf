@@ -1,50 +1,21 @@
-### Orchestrator Compartment-Level Policies for Management Group
+### Compartment-Mode IAM for the Management Group
 ###
-### These policies are created at the orchestrator compartment level
-### for users with only compartment-level permissions.
-
-# Management group needs orchestrator compartment write access for deployment
-resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
-  compartment_id = local.compartment_id
-  name           = format("mgmt-orchestrator-compute-%s", local.resource_suffix_hyphen)
-  description    = "Allow management group to manage compute resources in orchestrator compartment"
-  freeform_tags  = local.validated_tags
-  statements = [
-    for perm in module.iam.federated_mgmt_group_orchestrator_deploy_compute_permissions :
-    format(perm, local.compartment_id)
-  ]
-}
-
-resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_network" {
-  compartment_id = local.compartment_id
-  name           = format("mgmt-orchestrator-network-%s", local.resource_suffix_hyphen)
-  description    = "Allow management group to manage network resources in orchestrator compartment"
-  freeform_tags  = local.validated_tags
-  statements = [
-    for perm in module.iam.federated_mgmt_group_orchestrator_deploy_network_permissions :
-    format(perm, local.compartment_id)
-  ]
-}
-
-resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
-  compartment_id = local.compartment_id
-  name           = format("mgmt-orchestrator-functions-%s", local.resource_suffix_hyphen)
-  description    = "Allow management group to manage functions and events in orchestrator compartment"
-  freeform_tags  = local.validated_tags
-  statements = [
-    for perm in module.iam.federated_mgmt_group_orchestrator_deploy_functions_permissions :
-    format(perm, local.compartment_id)
-  ]
-}
-
-# Management group secret access
-resource "oci_identity_policy" "mgmt_group_secret_access_policy" {
-  compartment_id = local.compartment_id
-  name           = format("mgmt-secret-access-%s", local.resource_suffix_hyphen)
-  description    = "Allow management group to access secrets"
-  statements     = module.iam.federated_mgmt_group_secret_access_permissions
-  freeform_tags  = local.validated_tags
-}
+### The orchestrator-compartment grants for the management group are NOT here.
+### They are created once in modules/_shared/iam/federated-groups.tf
+### (federated-mgmt-group-orchestrator-compute / -functions / -secret-access),
+### which both deployment modes call, and which tenant mode has relied on alone
+### in production.
+###
+### This file previously duplicated them as mgmt-orchestrator-{compute,network,
+### functions} and mgmt-secret-access, built by re-formatting the same permission
+### lists. The duplicates granted nothing the _shared policies did not already
+### grant - virtual-network-family included, which is why no separate network
+### policy is needed - and the compute one could not be created at all: its list
+### carries "read availability-domains" and "read images", neither of which is a
+### resource type OCI recognises, so CreatePolicy rejected the whole statement
+### set with 400 "No permissions found" (UP-5960).
+###
+### Only the per-target-compartment policies below are specific to this mode.
 
 ### Target Compartment Policies (created in each target compartment)
 
@@ -53,7 +24,7 @@ resource "oci_identity_policy" "upwind_management_group_compartment_viewer_polic
   for_each = toset(var.target_compartment_ids)
 
   compartment_id = each.value
-  name           = format("mgmt-compartment-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("mgmt-compartment-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow management group to view compartment resources"
   freeform_tags  = local.validated_tags
   statements = [
@@ -66,7 +37,7 @@ resource "oci_identity_policy" "upwind_management_group_asset_viewer_policy" {
   for_each = toset(var.target_compartment_ids)
 
   compartment_id = each.value
-  name           = format("mgmt-asset-viewer-%s", local.resource_suffix_hyphen)
+  name           = format("mgmt-asset-viewer-%s-%s", local.resource_suffix_hyphen, local.target_compartment_discriminator[each.value])
   description    = "Allow management group to view assets"
   freeform_tags  = local.validated_tags
   statements = [

@@ -153,20 +153,8 @@ output "federated_mgmt_group" {
   value       = oci_identity_domains_group.upwind_federated_mgmt_group
 }
 
-output "federated_mgmt_group_orchestrator_deploy_compute_permissions" {
-  description = "Federated management group orchestrator compartment compute deployment permissions (use format() with compartment_id)."
-  value       = local.federated_mgmt_group_orchestrator_deploy_compute_permissions_list
-}
 
-output "federated_mgmt_group_orchestrator_deploy_network_permissions" {
-  description = "Federated management group orchestrator compartment network deployment permissions (use format() with compartment_id)."
-  value       = local.federated_mgmt_group_orchestrator_deploy_network_permissions_list
-}
 
-output "federated_mgmt_group_orchestrator_deploy_functions_permissions" {
-  description = "Federated management group orchestrator compartment functions deployment permissions (use format() with compartment_id)."
-  value       = local.federated_mgmt_group_orchestrator_deploy_functions_permissions_list
-}
 
 output "federated_mgmt_group_tenancy_read_permissions" {
   description = "Federated management group tenancy-wide read permissions (tenant mode only)."
@@ -178,7 +166,3 @@ output "federated_mgmt_group_tenancy_iam_permissions" {
   value       = local.federated_mgmt_group_tenancy_iam_permissions_list
 }
 
-output "federated_mgmt_group_secret_access_permissions" {
-  description = "Federated management group secret access permissions."
-  value       = local.federated_mgmt_group_secret_access_permissions_list
-}
