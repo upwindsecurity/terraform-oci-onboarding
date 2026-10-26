@@ -114,13 +114,6 @@ locals {
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read all-resources in tenancy ${local.read_all_resources_content_exclusion}",
   ] : []
 
-  # Federated management group tenancy-level IAM permissions (only if at tenancy level)
-  federated_mgmt_group_tenancy_iam_permissions_list = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? [
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage policies in tenancy",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage dynamic-groups in tenancy",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage users in tenancy"
-  ] : []
-
   # Federated management group secret access for deployment
   federated_mgmt_group_secret_access_permissions_list = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
@@ -217,21 +210,10 @@ moved {
   to   = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_functions[0]
 }
 
-# Federated management group tenancy-level IAM permissions (tenant mode only)
-resource "oci_identity_policy" "federated_mgmt_group_tenancy_iam_policy" {
-  count          = can(regex("^ocid1\\.tenancy\\..*", var.root_level_compartment_id)) ? 1 : 0
-  compartment_id = var.root_level_compartment_id
-  name           = format("federated-mgmt-group-tenancy-iam-%s", local.resource_suffix_hyphen)
-  description    = "Allow federated management group to manage IAM resources in tenancy"
-  statements     = local.federated_mgmt_group_tenancy_iam_permissions_list
-  freeform_tags  = local.validated_tags
-  defined_tags   = local.validated_defined_tags
-
-  lifecycle {
-    # OCI's tag defaults add these after create; without this every plan would strip them.
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-}
+# The management group no longer gets manage policies, manage dynamic-groups or manage users in
+# the tenancy. Terraform creates every policy, dynamic group and user Upwind needs at apply time,
+# and the management identity has made no IAM writes in audited deployments. Existing deployments
+# lose the federated-mgmt-group-tenancy-iam-* policy on their next apply.
 
 # Federated management group secret access
 resource "oci_identity_policy" "federated_mgmt_group_secret_access_policy" {

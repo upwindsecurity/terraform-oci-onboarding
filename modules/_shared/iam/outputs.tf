@@ -179,8 +179,8 @@ output "federated_mgmt_group_tenancy_read_permissions" {
 }
 
 output "federated_mgmt_group_tenancy_iam_permissions" {
-  description = "Federated management group tenancy-level IAM permissions (tenant mode only)."
-  value       = local.federated_mgmt_group_tenancy_iam_permissions_list
+  description = "Deprecated: always empty. The management group is no longer granted tenancy-level IAM write permissions."
+  value       = []
 }
 
 output "federated_mgmt_group_secret_access_permissions" {
