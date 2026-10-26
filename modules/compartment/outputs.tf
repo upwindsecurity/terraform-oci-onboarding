@@ -9,29 +9,29 @@ output "iam_module" {
 
 output "mgmt_group_orchestrator_deploy_compute" {
   description = "Management group orchestrator compartment compute deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_compute.statements
-  }
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0].id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0].name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0].statements
+  } : null
 }
 
 output "mgmt_group_orchestrator_deploy_network" {
   description = "Management group orchestrator compartment network deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_network.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_network.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_network.statements
-  }
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_network[0].id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_network[0].name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_network[0].statements
+  } : null
 }
 
 output "mgmt_group_orchestrator_deploy_functions" {
   description = "Management group orchestrator compartment functions deployment policy."
-  value = {
-    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.id
-    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.name
-    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_functions.statements
-  }
+  value = var.enable_cloudscanners ? {
+    id         = oci_identity_policy.mgmt_group_orchestrator_deploy_functions[0].id
+    name       = oci_identity_policy.mgmt_group_orchestrator_deploy_functions[0].name
+    statements = oci_identity_policy.mgmt_group_orchestrator_deploy_functions[0].statements
+  } : null
 }
 
 output "mgmt_group_secret_access_policy" {

@@ -153,7 +153,11 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
 # Split into multiple policies to match dynamic group structure and avoid OCI errors.
 # OCI caps a tenancy at 500 policy statements, so no statement repeats one that an
 # aggregate family (instance-family, volume-family, virtual-network-family) already grants.
+#
+# Upwind uses these only to run CloudScanner (its instance pools, networking and scaler
+# functions), so they exist only when CloudScanner is enabled.
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-compute-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage compute resources in orchestrator compartment"
@@ -177,6 +181,7 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute
 }
 
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functions" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = var.root_level_compartment_id
   name           = format("federated-mgmt-group-orchestrator-functions-%s", local.resource_suffix_hyphen)
   description    = "Allow federated management group to manage functions and events in orchestrator compartment"
@@ -191,6 +196,19 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functio
     # OCI's tag defaults add these after create; without this every plan would strip them.
     ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
   }
+}
+
+# These two policies gained a count when they were tied to enable_cloudscanners. Existing
+# deployments with CloudScanner enabled keep their policy in place instead of having it
+# destroyed and recreated, which would briefly revoke the management group's access.
+moved {
+  from = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_compute
+  to   = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_compute[0]
+}
+
+moved {
+  from = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_functions
+  to   = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_functions[0]
 }
 
 # Federated management group tenancy-level IAM permissions (tenant mode only)

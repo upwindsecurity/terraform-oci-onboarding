@@ -3,8 +3,10 @@
 ### These policies are created at the orchestrator compartment level
 ### for users with only compartment-level permissions.
 
-# Management group needs orchestrator compartment write access for deployment
+# Management group needs orchestrator compartment write access for deployment.
+# Upwind uses these only to run CloudScanner, so they exist only when CloudScanner is enabled.
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-compute-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage compute resources in orchestrator compartment"
@@ -16,6 +18,7 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
 }
 
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_network" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-network-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage network resources in orchestrator compartment"
@@ -27,6 +30,7 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_network" {
 }
 
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-functions-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage functions and events in orchestrator compartment"
@@ -35,6 +39,24 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
     for perm in module.iam.federated_mgmt_group_orchestrator_deploy_functions_permissions :
     format(perm, local.compartment_id)
   ]
+}
+
+# The deploy policies above gained a count when they were tied to enable_cloudscanners.
+# Existing deployments with CloudScanner enabled keep their policies in place instead of
+# having them destroyed and recreated, which would briefly revoke the management group's access.
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_compute
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0]
+}
+
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_network
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_network[0]
+}
+
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_functions
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_functions[0]
 }
 
 # Management group secret access
