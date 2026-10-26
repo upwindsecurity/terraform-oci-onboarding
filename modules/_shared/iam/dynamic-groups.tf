@@ -2,17 +2,20 @@
 
 ### CloudScanner Dynamic Groups and Users
 
-# CloudScanner dynamic group - needs tenancy-wide access for resource discovery
-# This dynamic group will be attached to CloudScanner Worker Instances and Scaler Functions
+# CloudScanner dynamic group - the instance principal identity of the CloudScanner worker instances.
+#
+# Membership is limited to instances in the orchestrator compartment, which is where Upwind launches
+# its scanner instance pools. The policies granted to this group still reach across compartments (or
+# the tenancy) for discovery and snapshots; this rule only decides which instances hold them. Matching
+# every instance in the tenancy would hand those grants to any VM the customer runs.
 resource "oci_identity_dynamic_group" "cloudscanner_dg" {
   count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = var.oci_tenancy_id
   name           = format("upwind-cs-%s", local.resource_suffix_hyphen)
   description    = "Dynamic group used by CloudScanners for scanning across compartments and scaling operations"
-  # TODO: all compartments for resource discovery, but scanning operations in orchestrator compartment
-  matching_rule = "ALL {instance.compartment.id != ''}"
-  freeform_tags = local.validated_tags
-  defined_tags  = local.validated_defined_tags
+  matching_rule  = "ALL {instance.compartment.id = '${var.upwind_orchestrator_compartment_id}'}"
+  freeform_tags  = local.validated_tags
+  defined_tags   = local.validated_defined_tags
 
   lifecycle {
     # OCI's tag defaults add these after create; without this every plan would strip them.
