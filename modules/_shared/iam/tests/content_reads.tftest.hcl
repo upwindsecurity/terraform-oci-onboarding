@@ -1,7 +1,3 @@
-# "read all-resources" includes OBJECT_READ (object contents) and SECRET_BUNDLE_READ (secret values).
-# Upwind's inventory only lists and describes resources, so every "read all-resources" grant must
-# exclude those two permissions.
-
 mock_provider "oci" {
   mock_data "oci_identity_domain" {
     defaults = {
@@ -46,9 +42,6 @@ run "tenancy_read_grants_exclude_object_and_secret_contents" {
 }
 
 run "deployment_can_read_its_own_secret_bundles" {
-  # The CloudScanner deployment reads the scanner credentials with GetSecretBundle. With
-  # SECRET_BUNDLE_READ excluded tenancy-wide, the management group needs it in the orchestrator
-  # compartment, where the module creates the vault and its secrets, and nowhere else.
   assert {
     condition = contains(
       output.federated_mgmt_group_secret_access_permissions,

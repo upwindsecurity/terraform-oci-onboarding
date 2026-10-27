@@ -80,10 +80,7 @@ resource "oci_identity_domains_group" "upwind_federated_reader_group" {
 }
 
 locals {
-  # Condition appended to every "read all-resources" grant. "read" on objects and secret-bundles
-  # returns their contents: GetObject/HeadObject need OBJECT_READ and GetSecretBundle needs
-  # SECRET_BUNDLE_READ. Upwind's inventory only lists and describes resources (ListBuckets,
-  # ListSecrets, ListVaults, ...), so it keeps every other read permission and loses only these two.
+  # Keeps object contents and secret values out of "read all-resources".
   read_all_resources_content_exclusion = "where all {request.permission != 'OBJECT_READ', request.permission != 'SECRET_BUNDLE_READ'}"
 
   # Group permission lists mirror the dynamic group permissions but use "group" instead of "dynamic-group"
@@ -119,10 +116,7 @@ locals {
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use vaults in compartment id ${var.upwind_orchestrator_compartment_id}",
-    # The CloudScanner deployment (DeploymentRole, i.e. this group) reads the scanner's client ID
-    # and secret from the vault with GetSecretBundle before it runs Terraform. "manage secrets" does
-    # not cover secret-bundles; this group used to get SECRET_BUNDLE_READ only through
-    # "read all-resources in tenancy", which now excludes it.
+    # The CloudScanner deployment reads its credentials from the vault.
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read secret-bundles in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
 
@@ -157,9 +151,6 @@ resource "oci_identity_policy" "federated_mgmt_group_tenancy_read_policy" {
 # Split into multiple policies to match dynamic group structure and avoid OCI errors.
 # OCI caps a tenancy at 500 policy statements, so no statement repeats one that an
 # aggregate family (instance-family, volume-family, virtual-network-family) already grants.
-#
-# Upwind uses these only to run CloudScanner (its instance pools, networking and scaler
-# functions), so they exist only when CloudScanner is enabled.
 resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_compute" {
   count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = var.root_level_compartment_id
@@ -202,9 +193,6 @@ resource "oci_identity_policy" "federated_mgmt_group_orchestrator_deploy_functio
   }
 }
 
-# These two policies gained a count when they were tied to enable_cloudscanners. Existing
-# deployments with CloudScanner enabled keep their policy in place instead of having it
-# destroyed and recreated, which would briefly revoke the management group's access.
 moved {
   from = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_compute
   to   = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_compute[0]
@@ -214,11 +202,6 @@ moved {
   from = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_functions
   to   = oci_identity_policy.federated_mgmt_group_orchestrator_deploy_functions[0]
 }
-
-# The management group no longer gets manage policies, manage dynamic-groups or manage users in
-# the tenancy. Terraform creates every policy, dynamic group and user Upwind needs at apply time,
-# and the management identity has made no IAM writes in audited deployments. Existing deployments
-# lose the federated-mgmt-group-tenancy-iam-* policy on their next apply.
 
 # Federated management group secret access
 resource "oci_identity_policy" "federated_mgmt_group_secret_access_policy" {

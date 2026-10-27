@@ -2,12 +2,7 @@
 
 ### CloudScanner Dynamic Groups and Users
 
-# CloudScanner dynamic group - the instance principal identity of the CloudScanner worker instances.
-#
-# Membership is limited to instances in the orchestrator compartment, which is where Upwind launches
-# its scanner instance pools. The policies granted to this group still reach across compartments (or
-# the tenancy) for discovery and snapshots; this rule only decides which instances hold them. Matching
-# every instance in the tenancy would hand those grants to any VM the customer runs.
+# CloudScanner worker instances, which run only in the orchestrator compartment.
 resource "oci_identity_dynamic_group" "cloudscanner_dg" {
   count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = var.oci_tenancy_id

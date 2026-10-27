@@ -1,10 +1,3 @@
-# The CloudScanner dynamic group holds tenancy-wide snapshot and key permissions, so its matching
-# rule decides which instances get them. It used to match every instance in the tenancy; it must
-# match only the orchestrator compartment, where Upwind runs its scanner instances.
-#
-# The management group's orchestrator deploy policies are used only to run CloudScanner, so they
-# must follow enable_cloudscanners like the scanner's own policies do.
-
 mock_provider "oci" {
   mock_data "oci_identity_domain" {
     defaults = {

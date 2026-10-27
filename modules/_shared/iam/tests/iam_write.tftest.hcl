@@ -1,7 +1,3 @@
-# Any "manage policies" grant lets its holder write a policy giving itself more access, and
-# Terraform creates every policy, dynamic group and user Upwind needs at apply time. No Upwind
-# identity may be granted IAM write in the tenancy.
-
 mock_provider "oci" {
   mock_data "oci_identity_domain" {
     defaults = {

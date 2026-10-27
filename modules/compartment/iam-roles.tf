@@ -3,8 +3,7 @@
 ### These policies are created at the orchestrator compartment level
 ### for users with only compartment-level permissions.
 
-# Management group needs orchestrator compartment write access for deployment.
-# Upwind uses these only to run CloudScanner, so they exist only when CloudScanner is enabled.
+# Management group needs orchestrator compartment write access to deploy CloudScanner
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
   count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
@@ -41,9 +40,6 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
   ]
 }
 
-# The deploy policies above gained a count when they were tied to enable_cloudscanners.
-# Existing deployments with CloudScanner enabled keep their policies in place instead of
-# having them destroyed and recreated, which would briefly revoke the management group's access.
 moved {
   from = oci_identity_policy.mgmt_group_orchestrator_deploy_compute
   to   = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0]
