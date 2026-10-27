@@ -118,7 +118,12 @@ locals {
   federated_mgmt_group_secret_access_permissions_list = [
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to manage secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read secrets in compartment id ${var.upwind_orchestrator_compartment_id}",
-    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use vaults in compartment id ${var.upwind_orchestrator_compartment_id}"
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to use vaults in compartment id ${var.upwind_orchestrator_compartment_id}",
+    # The CloudScanner deployment (DeploymentRole, i.e. this group) reads the scanner's client ID
+    # and secret from the vault with GetSecretBundle before it runs Terraform. "manage secrets" does
+    # not cover secret-bundles; this group used to get SECRET_BUNDLE_READ only through
+    # "read all-resources in tenancy", which now excludes it.
+    "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read secret-bundles in compartment id ${var.upwind_orchestrator_compartment_id}"
   ]
 
   # Federated reader group tenancy-wide read permissions

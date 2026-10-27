@@ -44,3 +44,24 @@ run "tenancy_read_grants_exclude_object_and_secret_contents" {
     error_message = "Every \"read all-resources in tenancy\" grant must exclude OBJECT_READ and SECRET_BUNDLE_READ."
   }
 }
+
+run "deployment_can_read_its_own_secret_bundles" {
+  # The CloudScanner deployment reads the scanner credentials with GetSecretBundle. With
+  # SECRET_BUNDLE_READ excluded tenancy-wide, the management group needs it in the orchestrator
+  # compartment, where the module creates the vault and its secrets, and nowhere else.
+  assert {
+    condition = contains(
+      output.federated_mgmt_group_secret_access_permissions,
+      "Allow group id ${oci_identity_domains_group.upwind_federated_mgmt_group.ocid} to read secret-bundles in compartment id ocid1.compartment.oc1..orchestrator",
+    )
+    error_message = "The management group must be able to read secret bundles in the orchestrator compartment, or the CloudScanner deployment cannot fetch its credentials."
+  }
+
+  assert {
+    condition = alltrue([
+      for statement in output.federated_mgmt_group_secret_access_permissions :
+      !strcontains(statement, "in tenancy")
+    ])
+    error_message = "Secret access for the management group must stay scoped to the orchestrator compartment."
+  }
+}
