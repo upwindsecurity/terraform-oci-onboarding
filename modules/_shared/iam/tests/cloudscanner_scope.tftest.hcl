@@ -66,3 +66,39 @@ run "no_scanner_or_deploy_grants_when_cloudscanner_is_disabled" {
     error_message = "The management group must not get orchestrator functions deploy rights when CloudScanner is disabled."
   }
 }
+
+run "scanner_volume_grant_is_limited_to_scanning" {
+  command = plan
+
+  assert {
+    condition = alltrue([
+      for s in output.cloudscanner_tenancy_snapshot_create_permissions :
+      strcontains(s, "where any {") && strcontains(s, "= 'BOOT_VOLUME_BACKUP_CREATE'")
+      && !strcontains(s, "= 'VOLUME_DELETE'") && !strcontains(s, "= 'VOLUME_CREATE'") && !strcontains(s, "= 'VOLUME_UPDATE'")
+      if strcontains(s, "volume-family")
+    ])
+    error_message = "Outside the orchestrator the scanner may only read volumes and create and delete backups."
+  }
+}
+
+run "object_storage_grant_needs_dspm" {
+  command = plan
+
+  assert {
+    condition     = length(output.cloudscanner_object_storage_permissions) == 0
+    error_message = "The scanner must not get object storage access unless DSPM scanning is enabled."
+  }
+}
+
+run "object_storage_grant_with_dspm" {
+  command = plan
+
+  variables {
+    enable_dspm_scanning = true
+  }
+
+  assert {
+    condition     = length(output.cloudscanner_object_storage_permissions) == 2
+    error_message = "DSPM scanning keeps the scanner's object storage grant."
+  }
+}

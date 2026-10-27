@@ -229,6 +229,12 @@ variable "enable_cloudscanners" {
   default     = true
 }
 
+variable "enable_dspm_scanning" {
+  description = "Grant CloudScanner the object storage permissions reserved for DSPM scanning. DSPM scanning is not yet supported on OCI."
+  type        = bool
+  default     = false
+}
+
 variable "upwind_region" {
   description = "The region of the Upwind organization."
   type        = string

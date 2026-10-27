@@ -88,6 +88,11 @@ output "cloudscanner_functions_permissions" {
   value       = local.cloudscanner_functions_permissions_list
 }
 
+output "cloudscanner_volume_family_scan_condition" {
+  description = "Condition limiting the CloudScanner volume-family grant outside the orchestrator compartment to scanning."
+  value       = local.cloudscanner_volume_family_scan_condition
+}
+
 output "cloudscanner_object_storage_permissions" {
   description = "CloudScanner dynamic group object storage permissions."
   value       = local.cloudscanner_object_storage_permissions_list

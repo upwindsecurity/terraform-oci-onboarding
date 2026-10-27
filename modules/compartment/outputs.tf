@@ -88,8 +88,8 @@ output "cs_dg_functions_policy" {
 }
 
 output "cs_dg_object_storage_policy" {
-  description = "CloudScanner dynamic group object storage policy."
-  value = var.enable_cloudscanners ? {
+  description = "CloudScanner dynamic group object storage policy (DSPM only)."
+  value = var.enable_cloudscanners && var.enable_dspm_scanning ? {
     id         = oci_identity_policy.cs_dg_object_storage_policy[0].id
     name       = oci_identity_policy.cs_dg_object_storage_policy[0].name
     statements = oci_identity_policy.cs_dg_object_storage_policy[0].statements
