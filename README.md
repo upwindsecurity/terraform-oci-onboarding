@@ -7,7 +7,10 @@
 Terraform module that connects an Oracle Cloud Infrastructure (OCI) tenancy, or selected compartments in it, to
 [Upwind](https://www.upwind.io). It creates the IAM users, groups, dynamic groups and policies Upwind needs, an identity
 domain with workload identity federation, and a Vault holding the Upwind credentials. It can also deploy Upwind
-CloudScanners, with optional DSPM scanning.
+CloudScanners.
+
+Access is least-privilege: Upwind's read access excludes object contents and secret values, Upwind gets no IAM write
+access, and the CloudScanner dynamic group matches only scanner instances in the orchestrator compartment.
 
 ## Deployment modes
 
