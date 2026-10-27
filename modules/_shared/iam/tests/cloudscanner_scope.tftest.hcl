@@ -25,6 +25,7 @@ variables {
   root_level_compartment_id          = "ocid1.tenancy.oc1..testtenancy"
   resource_suffix                    = "test"
   enable_cloudscanners               = true
+  vault_endpoint_wait                = "0s"
 }
 
 run "dynamic_group_matches_only_the_orchestrator_compartment" {
