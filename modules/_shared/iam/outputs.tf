@@ -88,6 +88,11 @@ output "cloudscanner_functions_permissions" {
   value       = local.cloudscanner_functions_permissions_list
 }
 
+output "cloudscanner_volume_family_scan_conditions" {
+  description = "Conditions limiting the CloudScanner volume-family grant outside the orchestrator compartment to scanning, one statement each."
+  value       = local.cloudscanner_volume_family_scan_conditions
+}
+
 output "cloudscanner_object_storage_permissions" {
   description = "CloudScanner dynamic group object storage permissions."
   value       = local.cloudscanner_object_storage_permissions_list
@@ -176,14 +181,14 @@ output "federated_mgmt_group_orchestrator_deploy_functions_permissions" {
   value       = local.federated_mgmt_group_orchestrator_deploy_functions_permissions_list
 }
 
+output "read_all_resources_content_exclusion" {
+  description = "Condition appended to \"read all-resources\" grants so they exclude object and secret contents (OBJECT_READ, SECRET_BUNDLE_READ)."
+  value       = local.read_all_resources_content_exclusion
+}
+
 output "federated_mgmt_group_tenancy_read_permissions" {
   description = "Federated management group tenancy-wide read permissions (tenant mode only)."
   value       = local.federated_mgmt_group_tenancy_read_permissions_list
-}
-
-output "federated_mgmt_group_tenancy_iam_permissions" {
-  description = "Federated management group tenancy-level IAM permissions (tenant mode only)."
-  value       = local.federated_mgmt_group_tenancy_iam_permissions_list
 }
 
 output "federated_mgmt_group_secret_access_permissions" {

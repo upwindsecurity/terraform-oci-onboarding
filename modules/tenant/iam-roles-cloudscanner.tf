@@ -101,7 +101,7 @@ resource "oci_identity_policy" "cs_dg_functions_policy" {
 
 # CloudScanner object storage permissions
 resource "oci_identity_policy" "cs_dg_object_storage_policy" {
-  count          = var.enable_cloudscanners ? 1 : 0
+  count          = var.enable_cloudscanners && var.enable_dspm_scanning ? 1 : 0
   compartment_id = var.oci_tenancy_id
   name           = format("cs-object-storage-%s", local.resource_suffix_hyphen)
   description    = "Allow cloudscanner dynamic group to access object storage"

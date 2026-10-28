@@ -57,7 +57,7 @@ variable "scanner_client_secret" {
 }
 
 variable "enable_dspm_scanning" {
-  description = "Enable DSPM scanning by cloud scanners"
+  description = "Grant CloudScanner the object storage permissions reserved for DSPM scanning. DSPM scanning is not yet supported on OCI."
   type        = bool
   default     = false
 }

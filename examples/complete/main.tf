@@ -1,4 +1,4 @@
-# Complete example: onboard selected OCI compartments to Upwind with the root module, CloudScanners and DSPM scanning
+# Complete example: onboard selected OCI compartments to Upwind with the root module and CloudScanners
 module "upwind_onboarding" {
   source = "../.."
 
@@ -20,7 +20,7 @@ module "upwind_onboarding" {
   enable_cloudscanners  = true
   scanner_client_id     = var.scanner_client_id
   scanner_client_secret = var.scanner_client_secret
-  enable_dspm_scanning  = true
+  enable_dspm_scanning  = false # DSPM scanning is not yet supported on OCI
 
   # Naming and tags
   resource_suffix = var.resource_suffix

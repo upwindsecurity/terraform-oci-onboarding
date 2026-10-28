@@ -3,6 +3,20 @@ locals {
   # Format: ${var.upwind_orchestrator_compartment_id} = compartment or tenancy scope placeholder
 
   # CloudScanner Dynamic Group Permissions
+
+  # Outside the orchestrator, scanning only reads volumes and creates and deletes backups. Restored
+  # scan volumes are created, attached and deleted under the orchestrator grants. VOLUME_WRITE is
+  # limited to the backup calls, since it also lets AttachVolume take a customer volume.
+  cloudscanner_volume_family_scan_conditions = concat(
+    ["where any {${join(", ", [for p in [
+      "VOLUME_INSPECT", "VOLUME_ATTACHMENT_INSPECT",
+      "VOLUME_BACKUP_INSPECT", "VOLUME_BACKUP_READ", "VOLUME_BACKUP_CREATE", "VOLUME_BACKUP_DELETE",
+      "BOOT_VOLUME_BACKUP_INSPECT", "BOOT_VOLUME_BACKUP_READ", "BOOT_VOLUME_BACKUP_CREATE", "BOOT_VOLUME_BACKUP_DELETE",
+    ] : "request.permission = '${p}'"])}}"],
+    [for op in ["CreateVolumeBackup", "CreateBootVolumeBackup"] :
+    "where all {request.permission = 'VOLUME_WRITE', request.operation = '${op}'}"],
+  )
+
   # Tenancy-wide compute resource read access. Volume reads come from "manage volume-family in
   # tenancy" in the snapshot list below, which is created under the same enable_cloudscanners gate.
   cloudscanner_tenancy_compute_read_permissions_list = var.enable_cloudscanners ? [
@@ -31,14 +45,16 @@ locals {
   ] : []
 
   # Tenancy-wide snapshot creation permissions
-  cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? [
-    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy",
+  cloudscanner_tenancy_snapshot_create_permissions_list = var.enable_cloudscanners ? concat([
+    for c in local.cloudscanner_volume_family_scan_conditions :
+    "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage volume-family in tenancy ${c}"
+    ], [
     # Required to create snapshots in tenancies that apply defined-tag defaults
     # (e.g. Oracle-Tags.CreatedBy) to new resources: without permission to use
     # the tag namespace, OCI rejects the backup with "Invalid tags". Tag
     # namespaces live in the root compartment, so this must be tenancy-scoped.
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to use tag-namespaces in tenancy",
-  ] : []
+  ]) : []
 
   # Cloudscanner kms permissions for encrypted volumes
   cloudscanner_tenancy_kms_permissions_list = var.enable_cloudscanners ? [
@@ -78,8 +94,8 @@ locals {
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to manage functions-family in compartment id ${var.upwind_orchestrator_compartment_id}"
   ] : []
 
-  # CloudScanner object storage permissions
-  cloudscanner_object_storage_permissions_list = var.enable_cloudscanners ? [
+  # CloudScanner object storage permissions, reserved for DSPM scanning (not yet supported on OCI)
+  cloudscanner_object_storage_permissions_list = var.enable_cloudscanners && var.enable_dspm_scanning ? [
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read buckets in compartment id ${var.upwind_orchestrator_compartment_id}",
     "Allow dynamic-group ${oci_identity_dynamic_group.cloudscanner_dg[0].name} to read objects in compartment id ${var.upwind_orchestrator_compartment_id}",
   ] : []

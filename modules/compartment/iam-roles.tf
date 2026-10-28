@@ -3,8 +3,9 @@
 ### These policies are created at the orchestrator compartment level
 ### for users with only compartment-level permissions.
 
-# Management group needs orchestrator compartment write access for deployment
+# Management group needs orchestrator compartment write access to deploy CloudScanner
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-compute-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage compute resources in orchestrator compartment"
@@ -16,6 +17,7 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_compute" {
 }
 
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_network" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-network-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage network resources in orchestrator compartment"
@@ -27,6 +29,7 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_network" {
 }
 
 resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
+  count          = var.enable_cloudscanners ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("mgmt-orchestrator-functions-%s", local.resource_suffix_hyphen)
   description    = "Allow management group to manage functions and events in orchestrator compartment"
@@ -35,6 +38,21 @@ resource "oci_identity_policy" "mgmt_group_orchestrator_deploy_functions" {
     for perm in module.iam.federated_mgmt_group_orchestrator_deploy_functions_permissions :
     format(perm, local.compartment_id)
   ]
+}
+
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_compute
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_compute[0]
+}
+
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_network
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_network[0]
+}
+
+moved {
+  from = oci_identity_policy.mgmt_group_orchestrator_deploy_functions
+  to   = oci_identity_policy.mgmt_group_orchestrator_deploy_functions[0]
 }
 
 # Management group secret access
@@ -57,7 +75,7 @@ resource "oci_identity_policy" "upwind_management_group_compartment_viewer_polic
   description    = "Allow management group to view compartment resources"
   freeform_tags  = local.validated_tags
   statements = [
-    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value}"
+    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value} ${module.iam.read_all_resources_content_exclusion}"
   ]
 }
 
@@ -70,6 +88,6 @@ resource "oci_identity_policy" "upwind_management_group_asset_viewer_policy" {
   description    = "Allow management group to view assets"
   freeform_tags  = local.validated_tags
   statements = [
-    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value}"
+    "Allow group id ${module.iam.federated_mgmt_group.ocid} to read all-resources in compartment id ${each.value} ${module.iam.read_all_resources_content_exclusion}"
   ]
 }

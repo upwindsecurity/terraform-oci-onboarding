@@ -47,7 +47,7 @@ resource "oci_identity_policy" "cs_dg_functions_policy" {
 
 # CloudScanner object storage permissions
 resource "oci_identity_policy" "cs_dg_object_storage_policy" {
-  count          = var.enable_cloudscanners ? 1 : 0
+  count          = var.enable_cloudscanners && var.enable_dspm_scanning ? 1 : 0
   compartment_id = local.compartment_id
   name           = format("cs-object-storage-%s", local.resource_suffix_hyphen)
   description    = "Allow cloudscanner dynamic group to access object storage"
@@ -165,7 +165,8 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value}"
+    for c in module.iam.cloudscanner_volume_family_scan_conditions :
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value} ${c}"
   ]
 
   lifecycle {

@@ -229,6 +229,12 @@ variable "enable_cloudscanners" {
   default     = true
 }
 
+variable "enable_dspm_scanning" {
+  description = "Grant CloudScanner the object storage permissions reserved for DSPM scanning. DSPM scanning is not yet supported on OCI."
+  type        = bool
+  default     = false
+}
+
 variable "enable_cloudlogs" {
   description = "Create the audit-logs WIF user and group (trust role cloudlogs). The terraform-oci-cloudlogs module grants the group its bucket and stream access."
   type        = bool

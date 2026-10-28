@@ -24,6 +24,7 @@ variables {
   root_level_compartment_id          = "ocid1.compartment.oc1..orchestrator"
   resource_suffix                    = "test"
   enable_cloudscanners               = true
+  vault_endpoint_wait                = "0s"
 }
 
 run "orchestrator_compartment_grants_the_scan_volume_lifecycle" {

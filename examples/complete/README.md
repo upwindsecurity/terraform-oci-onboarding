@@ -1,7 +1,7 @@
 # Complete Example
 
-Onboards selected OCI compartments to Upwind through the root module in `compartment` mode, with CloudScanners and
-DSPM scanning enabled, a resource suffix and freeform tags.
+Onboards selected OCI compartments to Upwind through the root module in `compartment` mode, with CloudScanners, a
+resource suffix and freeform tags.
 
 Compartment mode still creates the CloudScanner dynamic group and the Upwind IAM users at the tenancy root, so the
 caller needs tenancy-level `manage dynamic-groups` and `manage users`. Apply from the tenancy's home region.

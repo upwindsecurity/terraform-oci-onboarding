@@ -52,7 +52,6 @@ module "upwind_tenant" {
 
   # Optional Configuration
   enable_cloudscanners = true
-  enable_dspm_scanning = true
   resource_suffix      = "prod"
   is_dev               = false
 
@@ -119,18 +118,18 @@ Allow group Administrators to manage compartments in tenancy
 
 - **Tenancy-Wide Access**: Policies grant access to all compartments within the tenancy
 - **Least Privilege**: Minimal required permissions for each operation
-- **Conditional Access**: CloudScanner policies include resource name conditions
+- **Conditional Access**: Policy conditions exclude object contents and secret values, and limit CloudScanner volume access to scanning
 - **Audit Trail**: All operations are logged and auditable
 - **Encryption**: All secrets are encrypted using OCI Vault
 
 ## CloudScanner Features
 
-When `enable_cloudscanners = true`, the module provides:
+When `enable_cloudscanners = true`, the CloudScanner dynamic group (scanner instances in the orchestrator compartment)
+can:
 
-- **Compute Resource Discovery**: Read access to instances and volumes across all compartments
-- **Boot Volume Management**: Create and delete boot volume backups
-- **Object Storage Scanning**: Read access to buckets and objects
-- **DSPM Integration**: Optional data security posture management
+- Read instances, node pools and container images across the tenancy
+- Read volumes and create and delete volume backups across the tenancy, with no other volume access
+- Restore, attach and delete scan volumes in the orchestrator compartment
 
 ## Audit Logs
 
@@ -140,11 +139,8 @@ When `enable_cloudlogs = true`, the module provides:
 
 ## DSPM Scanning
 
-When `enable_dspm_scanning = true`, additional permissions are granted for:
-
-- Object storage object reading across all compartments
-- Enhanced data discovery capabilities
-- Data classification and protection scanning
+DSPM scanning is not yet supported on OCI. `enable_dspm_scanning = true` only grants CloudScanner read access to
+buckets and objects in the orchestrator compartment.
 
 ## Differences from Other Modules
 
