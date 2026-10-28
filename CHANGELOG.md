@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.13.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.13.0...v1.13.1) (2026-10-28)
+
+### Bug Fixes
+
+* **UP-10719:** least-privilege IAM for the OCI onboarding ([#87](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/87)) ([021641c](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/021641ceaf1948c2071b60b50b71e638782c17c6))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
