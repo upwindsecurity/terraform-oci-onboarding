@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.13.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.12.0...v1.13.0) (2026-10-28)
+
+### Features
+
+* **UP-8472:** create the audit-logs WIF user and group for cloudlogs ([#84](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/84)) ([7a93b99](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/7a93b993cfeb66b3ebf09d0affefd8241c76c81f))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
