@@ -140,6 +140,11 @@ output "identity_domain_federation_info" {
   value       = module.iam.identity_domain_federation_info
 }
 
+output "federated_cloudlogs_group" {
+  description = "The Identity Domain group of the audit-logs user (null unless enable_cloudlogs)."
+  value       = module.iam.federated_cloudlogs_group
+}
+
 output "identity_domain_oidc_issuer_url" {
   description = "OIDC issuer URL for the Identity Domain (for AWS IAM OIDC provider configuration)"
   value       = module.iam.identity_domain_federation_info.oidc_issuer_url
@@ -189,6 +194,7 @@ output "configuration" {
     upwind_orchestrator_compartment_id = var.upwind_orchestrator_compartment_id
     oci_region                         = var.oci_region
     enable_cloudscanners               = var.enable_cloudscanners
+    enable_cloudlogs                   = var.enable_cloudlogs
     enable_dspm_scanning               = var.enable_dspm_scanning
     resource_suffix                    = var.resource_suffix
     tags                               = var.tags

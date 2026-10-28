@@ -17,9 +17,10 @@ The module creates the following core components:
 
 1. **Management Dynamic Group**: Handles deployment and orchestration operations
 2. **CloudScanner Dynamic Group**: Performs security scanning across compartments (optional, if `enable_cloudscanners = true`)
-3. **Identity Domain**: Enables workload identity federation with AWS (created automatically if `oci_domain_id` is not provided, or uses existing domain if `oci_domain_id` is provided)
-4. **Orchestrator Compartment Policies**: Grants CloudScanner permissions for volume and snapshot management
-5. **Workload Identity Federation Policy**: Allows AWS workloads to authenticate to OCI via OIDC
+3. **Audit Logs User and Group**: Reads the audit-logs bucket and stream created by `terraform-oci-cloudlogs` (optional, if `enable_cloudlogs = true`)
+4. **Identity Domain**: Enables workload identity federation with AWS (created automatically if `oci_domain_id` is not provided, or uses existing domain if `oci_domain_id` is provided)
+5. **Orchestrator Compartment Policies**: Grants CloudScanner permissions for volume and snapshot management
+6. **Workload Identity Federation Policy**: Allows AWS workloads to authenticate to OCI via OIDC
 
 ## Usage
 
@@ -109,6 +110,7 @@ Allow group Administrators to manage compartments in tenancy
 
 - Dynamic Groups (1-2): Management dynamic group (always), CloudScanner dynamic group (if `enable_cloudscanners = true`)
 - Users (1-2): Management user (always), CloudScanner user (if `enable_cloudscanners = true`)
+- Audit Logs User and Group (0-1): Created if `enable_cloudlogs = true`
 - IAM Policies (4): Orchestrator compartment policies for CloudScanner (3), Workload Identity Federation policy (1)
 - Identity Domain (0-1): Created automatically if `oci_domain_id` is not provided, or uses existing domain if `oci_domain_id` is provided
 - Workload Identity Federation Policy (1): AWS workload federation policy

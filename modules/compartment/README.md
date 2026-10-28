@@ -139,6 +139,12 @@ can:
 - Read volumes and create and delete volume backups in the target compartments, with no other volume access
 - Restore, attach and delete scan volumes in the orchestrator compartment
 
+## Audit Logs
+
+When `enable_cloudlogs = true`, the module provides:
+
+- **Audit Logs User and Group**: Read access to the audit-logs bucket and stream created by `terraform-oci-cloudlogs`
+
 ## DSPM Scanning
 
 DSPM scanning is not yet supported on OCI. `enable_dspm_scanning = true` only grants CloudScanner read access to

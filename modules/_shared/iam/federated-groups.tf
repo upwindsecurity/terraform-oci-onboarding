@@ -79,6 +79,42 @@ resource "oci_identity_domains_group" "upwind_federated_reader_group" {
   ]
 }
 
+# Audit-logs group. Granted nothing here: terraform-oci-cloudlogs finds it by display name
+# and grants it read access to its bucket and stream, so the name is a contract with that module.
+resource "oci_identity_domains_group" "upwind_federated_cloudlogs_group" {
+  count         = var.enable_cloudlogs ? 1 : 0
+  idcs_endpoint = local.identity_domain_url
+  display_name  = format("upwind-federated-cloudlogs-%s", local.resource_suffix_hyphen)
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:Group",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+  ]
+
+  members {
+    type  = "User"
+    value = oci_identity_domains_user.cloudlogs_user[0].id
+  }
+
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
+    }
+  }
+}
+
 locals {
   # Keeps object contents and secret values out of "read all-resources".
   read_all_resources_content_exclusion = "where all {request.permission != 'OBJECT_READ', request.permission != 'SECRET_BUNDLE_READ'}"

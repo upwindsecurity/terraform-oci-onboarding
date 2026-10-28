@@ -21,6 +21,11 @@ output "identity_domain_created_by_module" {
   value       = var.oci_domain_id == ""
 }
 
+output "federated_cloudlogs_group" {
+  description = "The Identity Domain group of the audit-logs user (null unless enable_cloudlogs)."
+  value       = var.deployment_mode == "tenant" ? module.tenant[0].federated_cloudlogs_group : module.compartment[0].federated_cloudlogs_group
+}
+
 output "identity_domain_oidc_issuer_url" {
   description = "OIDC issuer URL for the Identity Domain (for AWS IAM OIDC provider configuration)"
   value       = var.deployment_mode == "tenant" ? module.tenant[0].identity_domain_oidc_issuer_url : module.compartment[0].identity_domain_oidc_issuer_url

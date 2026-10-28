@@ -15,6 +15,7 @@ module "iam" {
   resource_suffix        = var.resource_suffix
   enable_cloudscanners   = var.enable_cloudscanners
   enable_dspm_scanning   = var.enable_dspm_scanning
+  enable_cloudlogs       = var.enable_cloudlogs
   tags                   = var.tags
   default_tags           = var.default_tags
   defined_tags           = var.defined_tags
