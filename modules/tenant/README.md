@@ -132,6 +132,12 @@ When `enable_cloudscanners = true`, the module provides:
 - **Object Storage Scanning**: Read access to buckets and objects
 - **DSPM Integration**: Optional data security posture management
 
+## Audit Logs
+
+When `enable_cloudlogs = true`, the module provides:
+
+- **Audit Logs User and Group**: Read access to the audit-logs bucket and stream created by `terraform-oci-cloudlogs`
+
 ## DSPM Scanning
 
 When `enable_dspm_scanning = true`, additional permissions are granted for:

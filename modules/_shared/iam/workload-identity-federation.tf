@@ -253,6 +253,50 @@ resource "oci_identity_domains_user" "cloudscanner_user" {
   ]
 }
 
+# Audit-logs user: no classic oci_identity_user counterpart, since nothing signs in as one.
+# The trust maps role "cloudlogs" (its description) to it; terraform-oci-cloudlogs grants its group access.
+resource "oci_identity_domains_user" "cloudlogs_user" {
+  count         = var.enable_cloudlogs ? 1 : 0
+  idcs_endpoint = local.identity_domain_url
+  user_name     = format("upwind-cloudlogs-%s@noreply.upwind.io", local.resource_suffix_hyphen)
+  description   = "cloudlogs"
+
+  urnietfparamsscimschemasoracleidcsextensionuser_user {
+    service_user = true
+  }
+
+  schemas = [
+    "urn:ietf:params:scim:schemas:core:2.0:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:userState:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:capabilities:User",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:user:User",
+  ]
+
+  urnietfparamsscimschemasoracleidcsextension_oci_tags {
+    dynamic "freeform_tags" {
+      for_each = local.validated_tags
+      content {
+        key   = freeform_tags.key
+        value = freeform_tags.value
+      }
+    }
+
+    dynamic "defined_tags" {
+      for_each = local.validated_defined_tags
+      content {
+        namespace = split(".", defined_tags.key)[0]
+        key       = split(".", defined_tags.key)[1]
+        value     = defined_tags.value
+      }
+    }
+  }
+
+  depends_on = [
+    oci_identity_domain.upwind_identity_domain
+  ]
+}
+
 resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_domain_token_exchange_trust" {
   idcs_endpoint       = local.identity_domain_url
   issuer              = var.is_dev ? "upwind.dev" : "upwind.io"
@@ -268,14 +312,15 @@ resource "oci_identity_domains_identity_propagation_trust" "upwind_identity_doma
 
   dynamic "impersonation_service_users" {
     for_each = {
-      # cloudscanner_user is count-based, so it is an empty list when
-      # enable_cloudscanners is false. Concatenating keeps null out of the list.
+      # cloudscanner_user and cloudlogs_user are count-based, so each is an empty
+      # list when disabled. Concatenating keeps null out of the list.
       for u in concat(
         [
           oci_identity_domains_user.upwind_management_user,
           oci_identity_domains_user.upwind_ro_user,
         ],
         oci_identity_domains_user.cloudscanner_user,
+        oci_identity_domains_user.cloudlogs_user,
       ) :
       u.user_name => u
     }

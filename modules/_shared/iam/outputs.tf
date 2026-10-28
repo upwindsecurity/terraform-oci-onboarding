@@ -153,6 +153,14 @@ output "federated_mgmt_group" {
   value       = oci_identity_domains_group.upwind_federated_mgmt_group
 }
 
+output "federated_cloudlogs_group" {
+  description = "The Identity Domain group of the audit-logs user (null unless enable_cloudlogs)."
+  value = var.enable_cloudlogs ? {
+    ocid         = oci_identity_domains_group.upwind_federated_cloudlogs_group[0].ocid
+    display_name = oci_identity_domains_group.upwind_federated_cloudlogs_group[0].display_name
+  } : null
+}
+
 output "federated_mgmt_group_orchestrator_deploy_compute_permissions" {
   description = "Federated management group orchestrator compartment compute deployment permissions (use format() with compartment_id)."
   value       = local.federated_mgmt_group_orchestrator_deploy_compute_permissions_list

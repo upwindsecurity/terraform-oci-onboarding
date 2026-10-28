@@ -37,6 +37,12 @@ variable "enable_cloudscanners" {
   default     = false
 }
 
+variable "enable_cloudlogs" {
+  description = "Create the audit-logs WIF user and group for the terraform-oci-cloudlogs module."
+  type        = bool
+  default     = false
+}
+
 variable "scanner_client_id" {
   description = "The client ID used for authentication with the Upwind Cloudscanner Service."
   type        = string

@@ -15,6 +15,7 @@ module "upwind_compartment_onboarding" {
 
   # Optional configuration
   enable_cloudscanners  = var.enable_cloudscanners
+  enable_cloudlogs      = var.enable_cloudlogs
   scanner_client_id     = var.scanner_client_id
   scanner_client_secret = var.scanner_client_secret
   enable_dspm_scanning  = var.enable_dspm_scanning

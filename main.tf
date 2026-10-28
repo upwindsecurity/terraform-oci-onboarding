@@ -11,6 +11,7 @@ module "tenant" {
   scanner_client_secret  = var.scanner_client_secret
   resource_suffix        = var.resource_suffix
   enable_cloudscanners   = var.enable_cloudscanners
+  enable_cloudlogs       = var.enable_cloudlogs
   is_dev                 = var.is_dev
   tags                   = var.tags
   defined_tags           = var.defined_tags
@@ -54,6 +55,7 @@ module "compartment" {
   scanner_client_secret  = var.scanner_client_secret
   resource_suffix        = var.resource_suffix
   enable_cloudscanners   = var.enable_cloudscanners
+  enable_cloudlogs       = var.enable_cloudlogs
   is_dev                 = var.is_dev
   tags                   = var.tags
   defined_tags           = var.defined_tags
