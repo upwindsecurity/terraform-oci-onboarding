@@ -73,11 +73,25 @@ run "scanner_volume_grant_is_limited_to_scanning" {
   assert {
     condition = alltrue([
       for s in output.cloudscanner_tenancy_snapshot_create_permissions :
-      strcontains(s, "where any {") && strcontains(s, "= 'BOOT_VOLUME_BACKUP_CREATE'")
+      strcontains(s, " where ")
       && !strcontains(s, "= 'VOLUME_DELETE'") && !strcontains(s, "= 'VOLUME_CREATE'") && !strcontains(s, "= 'VOLUME_UPDATE'")
       if strcontains(s, "volume-family")
     ])
     error_message = "Outside the orchestrator the scanner may only read volumes and create and delete backups."
+  }
+
+  assert {
+    condition = alltrue([
+      for s in output.cloudscanner_tenancy_snapshot_create_permissions :
+      strcontains(s, "request.operation = 'CreateVolumeBackup'") || strcontains(s, "request.operation = 'CreateBootVolumeBackup'")
+      if strcontains(s, "'VOLUME_WRITE'")
+    ])
+    error_message = "VOLUME_WRITE must be limited to the backup operations, or the scanner can attach customer volumes."
+  }
+
+  assert {
+    condition     = length([for s in output.cloudscanner_tenancy_snapshot_create_permissions : s if strcontains(s, "volume-family")]) == 3
+    error_message = "Expected the scan permissions statement plus one VOLUME_WRITE statement per backup operation."
   }
 }
 

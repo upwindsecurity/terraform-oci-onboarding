@@ -88,9 +88,9 @@ output "cloudscanner_functions_permissions" {
   value       = local.cloudscanner_functions_permissions_list
 }
 
-output "cloudscanner_volume_family_scan_condition" {
-  description = "Condition limiting the CloudScanner volume-family grant outside the orchestrator compartment to scanning."
-  value       = local.cloudscanner_volume_family_scan_condition
+output "cloudscanner_volume_family_scan_conditions" {
+  description = "Conditions limiting the CloudScanner volume-family grant outside the orchestrator compartment to scanning, one statement each."
+  value       = local.cloudscanner_volume_family_scan_conditions
 }
 
 output "cloudscanner_object_storage_permissions" {
@@ -181,11 +181,6 @@ output "read_all_resources_content_exclusion" {
 output "federated_mgmt_group_tenancy_read_permissions" {
   description = "Federated management group tenancy-wide read permissions (tenant mode only)."
   value       = local.federated_mgmt_group_tenancy_read_permissions_list
-}
-
-output "federated_mgmt_group_tenancy_iam_permissions" {
-  description = "Deprecated: always empty. The management group is no longer granted tenancy-level IAM write permissions."
-  value       = []
 }
 
 output "federated_mgmt_group_secret_access_permissions" {

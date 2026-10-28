@@ -45,9 +45,4 @@ run "no_upwind_identity_gets_iam_write" {
     ])
     error_message = "No Upwind identity may be granted manage or use on policies, dynamic groups, users or groups."
   }
-
-  assert {
-    condition     = length(output.federated_mgmt_group_tenancy_iam_permissions) == 0
-    error_message = "The deprecated federated_mgmt_group_tenancy_iam_permissions output must stay empty."
-  }
 }

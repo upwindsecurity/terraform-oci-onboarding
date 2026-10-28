@@ -165,7 +165,8 @@ resource "oci_identity_policy" "upwind_cloudscanner_dg_snapshot_create_policy" {
   freeform_tags  = local.validated_tags
   defined_tags   = local.validated_defined_tags
   statements = [
-    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value} ${module.iam.cloudscanner_volume_family_scan_condition}"
+    for c in module.iam.cloudscanner_volume_family_scan_conditions :
+    "Allow dynamic-group ${module.iam.cloudscanner_dg[0].name} to manage volume-family in compartment id ${each.value} ${c}"
   ]
 
   lifecycle {
