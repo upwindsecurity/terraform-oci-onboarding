@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.11.1](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.11.0...v1.11.1) (2026-09-18)
+
+### Bug Fixes
+
+* **UP-7762:** keep null out of impersonation_service_users when cloudscanners are off ([#66](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/66)) ([1fca28b](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/1fca28bb5c37002c7a610787b83214d5c1be917e))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
