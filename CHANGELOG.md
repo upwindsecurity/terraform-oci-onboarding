@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.10.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.9.2...v1.10.0) (2026-09-10)
+
+### Features
+
+* **UP-6615:** grant the CloudScanner dynamic group registry read ([#60](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/60)) ([7dfa5b9](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/7dfa5b98e42bb3c15f4f61d2afc940d85b34816c)), closes [upwindsecurity/cloudscanner#3206](https://github.com/upwindsecurity/cloudscanner/issues/3206)
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
