@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.7.0](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.6.0...v1.7.0) (2026-04-28)
+
+### Features
+
+* **AG-8744:** bumped the minimum required version for oci provider from 7.0.0 to 8.0.0 ([#42](https://github.com/upwindsecurity/terraform-oci-onboarding/issues/42)) ([60182ad](https://github.com/upwindsecurity/terraform-oci-onboarding/commit/60182ad52dca9676129a773a17cc4d3ad87c827f))
+
 ## [1.4.3](https://github.com/upwindsecurity/terraform-oci-onboarding/compare/v1.4.2...v1.4.3) (2026-02-24)
 
 ### Bug Fixes
